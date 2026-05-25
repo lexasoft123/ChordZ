@@ -1,0 +1,92 @@
+/* ────────────────────────────────────────────────────────────────
+   ATELIER — a musician's open notebook on warm paper.
+   ──────────────────────────────────────────────────────────────── */
+
+.theme-atelier {
+  /* Surfaces */
+  --bg:          #F6F0E4;
+  --bg-elevated: #FBF6EB;
+  --bg-sunken:   #EEE6D2;
+  --bg-panel:    #F1EAD8;
+  --bg-spine:    #E7DDC4;
+
+  /* Ink */
+  --ink:        #1F1A12;
+  --ink-soft:   #594A33;
+  --ink-faint:  #8E7F66;
+  --ink-line:   rgba(31, 26, 18, 0.14);
+  --hairline:   rgba(31, 26, 18, 0.10);
+
+  /* Accent — burnt sienna */
+  --accent:       #B5491C;
+  --accent-soft:  #E0A88A;
+  --accent-tint:  rgba(181, 73, 28, 0.10);
+
+  /* Chord */
+  --chord:    var(--accent);
+  --chord-bg: var(--accent-tint);
+
+  /* Type — strict, modern, screen-legible */
+  --font-display: 'IBM Plex Sans', 'Helvetica Neue', system-ui, sans-serif;
+  --font-body:    'IBM Plex Sans', 'Helvetica Neue', system-ui, sans-serif;
+  --font-ui:      'IBM Plex Sans', 'Helvetica Neue', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --font-feature-display: "kern" 1, "cv02" 1, "cv04" 1;
+  --font-feature-body:    "kern" 1, "cv02" 1, "cv04" 1;
+
+  --display-weight: 600;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-soft:
+    0 1px 0 rgba(31, 26, 18, 0.04),
+    0 4px 18px rgba(31, 26, 18, 0.05);
+  --shadow-pop:
+    0 2px 0 rgba(31, 26, 18, 0.05),
+    0 18px 40px -8px rgba(31, 26, 18, 0.20);
+
+  /* Diagram */
+  --diagram-string: rgba(31, 26, 18, 0.55);
+  --diagram-fret:   rgba(31, 26, 18, 0.40);
+  --diagram-nut:    var(--ink);
+  --diagram-dot:    var(--accent);
+  --diagram-dot-text: var(--bg-elevated);
+  --diagram-open:   var(--ink);
+  --diagram-mute:   var(--ink-soft);
+  --diagram-barre:  var(--accent);
+  --diagram-strokew: 1.2px;
+
+  /* Paper grain — tiled noise SVG */
+  --paper-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.05 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+
+  color: var(--ink);
+  background-color: var(--bg);
+  background-image: var(--paper-grain);
+  background-size: 240px 240px;
+  font-family: var(--font-body);
+  font-feature-settings: var(--font-feature-body);
+}
+
+.theme-atelier[data-dark="1"] {
+  --bg:          #1B1612;
+  --bg-elevated: #251E18;
+  --bg-sunken:   #14100C;
+  --bg-panel:    #1F1812;
+  --bg-spine:    #16110D;
+  --ink:        #F0E6D2;
+  --ink-soft:   #C5B294;
+  --ink-faint:  #80715C;
+  --ink-line:   rgba(240, 230, 210, 0.12);
+  --hairline:   rgba(240, 230, 210, 0.10);
+  --accent:     #D9844C;
+  --accent-soft:#A0623A;
+  --accent-tint: rgba(217, 132, 76, 0.14);
+  --diagram-string: rgba(240, 230, 210, 0.55);
+  --diagram-fret:   rgba(240, 230, 210, 0.35);
+  --diagram-nut:    var(--ink);
+  --diagram-dot-text: var(--bg);
+  --paper-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.85 0 0 0 0 0.65 0 0 0 0.05 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+}

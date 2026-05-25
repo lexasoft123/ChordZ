@@ -1,0 +1,12 @@
+/* Shared token shape. Atelier & Studio supply concrete values. */
+:root {
+  --titlebar-h: 44px;
+  --sidebar-w: 264px;
+  --meta-w: 280px;
+  --player-h: 56px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.6, 0, 0.4, 1);
+  --t-fast: 120ms;
+  --t-med: 220ms;
+  --t-slow: 380ms;
+}
