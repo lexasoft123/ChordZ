@@ -7,7 +7,14 @@ import type { Song } from '../lib/chordpro'
  *  - File: load an mp3/wav and play it back (HTMLAudioElement)
  *  - Backing: WebAudio click + bass thump at the song's tempo
  */
-export default function Player({ song, themeKey }: { song: Song; themeKey: 'atelier' | 'studio' }) {
+interface PlayerProps {
+  song: Song
+  themeKey: 'atelier' | 'studio'
+  showHelper?: boolean
+  onShowHelperChange?: (v: boolean) => void
+}
+
+export default function Player({ song, themeKey, showHelper, onShowHelperChange }: PlayerProps) {
   const [src, setSrc] = useState<string | null>(null)
   const [mode, setMode] = useState<'file' | 'backing'>('backing')
   const [playing, setPlaying] = useState(false)
@@ -49,6 +56,31 @@ export default function Player({ song, themeKey }: { song: Song; themeKey: 'atel
 
   return (
     <footer className="player" data-theme={themeKey}>
+      {onShowHelperChange && (
+        <button
+          className="player-helper-toggle"
+          data-active={showHelper ? '1' : '0'}
+          aria-pressed={!!showHelper}
+          onClick={() => onShowHelperChange(!showHelper)}
+          title={showHelper ? 'Hide guitar helper (⌘⇧G)' : 'Show guitar helper (⌘⇧G)'}
+          aria-label="Toggle guitar helper panel"
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden style={{ display: 'block' }}>
+            <rect x="1.5" y="2.5" width="11" height="9" rx="1.2" fill="none" stroke="currentColor" strokeWidth="1.1" />
+            <line x1="5.2" y1="2.5" x2="5.2" y2="11.5" stroke="currentColor" strokeWidth="0.9" />
+            <line x1="8.8" y1="2.5" x2="8.8" y2="11.5" stroke="currentColor" strokeWidth="0.9" />
+            <circle cx="3.4" cy="7" r="0.9" fill="currentColor" />
+            <circle cx="7" cy="7" r="0.9" fill="currentColor" />
+            <circle cx="10.6" cy="7" r="0.9" fill="currentColor" />
+          </svg>
+          <span className="player-helper-toggle-label">
+            {themeKey === 'studio' ? 'HELPER' : 'Helper'}
+          </span>
+          <span className="player-helper-toggle-caret" aria-hidden>
+            {showHelper ? '▾' : '▴'}
+          </span>
+        </button>
+      )}
       <div className="player-mode">
         <button
           className="player-mode-btn"

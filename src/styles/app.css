@@ -154,11 +154,15 @@
 .workspace[data-compact="1"] .mode-segmented,
 .workspace[data-compact="1"] .toolbar-meta-toggle { display: none; }
 .workspace-main {
-  display: grid;
-  grid-template-rows: auto 1fr var(--player-h);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   background: var(--bg);
 }
+.workspace-main > .toolbar      { flex: 0 0 auto; }
+.workspace-main > .workspace-body { flex: 1 1 auto; min-height: 0; }
+.workspace-main > .guitar-helper { flex: 0 0 auto; }
+.workspace-main > .player       { flex: 0 0 var(--player-h); }
 .workspace-body {
   display: grid;
   overflow: hidden;
@@ -821,13 +825,48 @@
 
 .player {
   display: grid;
-  grid-template-columns: auto auto 1fr auto;
+  grid-template-columns: auto auto auto 1fr auto;
   align-items: center;
   gap: 14px;
   height: var(--player-h);
   padding: 0 24px;
   border-top: 1px solid var(--hairline);
   background: var(--bg-elevated);
+}
+
+.player-helper-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px 0 8px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.player-helper-toggle:hover {
+  color: var(--ink);
+  border-color: var(--ink-line);
+  background: var(--bg-panel);
+}
+.player-helper-toggle[data-active="1"] {
+  background: var(--ink);
+  color: var(--bg-elevated);
+  border-color: var(--ink);
+}
+.player-helper-toggle-caret {
+  font-size: 9px;
+  opacity: 0.75;
+}
+.theme-studio .player-helper-toggle-label {
+  letter-spacing: 0.08em;
 }
 .player-mode {
   display: inline-flex;
@@ -1174,3 +1213,405 @@
   border: 2px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-line); }
+
+/* ════════════════════════════════════════════════════════════════
+   GUITAR HELPER (toggleable bottom panel)
+   ════════════════════════════════════════════════════════════════ */
+
+.guitar-helper {
+  /* shim: helper components reference --text, --border, etc.; resolve them to
+     ChordZ tokens so the panel inherits theme + dark mode. */
+  --text:        var(--ink);
+  --text-mute:   var(--ink-soft);
+  --text-dim:    var(--ink-faint);
+  --border:      var(--hairline);
+  --border-2:    var(--ink-line);
+  --surface:     var(--bg-panel);
+  --surface-2:   var(--bg-elevated);
+  --fb-board-top: #1e2533;
+  --fb-board-bot: #141923;
+
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  height: 320px;
+  min-height: 0;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--hairline);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+/* When the fretboard is hidden, FretboardControls aren't rendered either —
+   collapse the grid to just header + body and let the panel size to its
+   content (a thin strip when chords are off, a chord-grid block when on)
+   instead of leaving 320px of dead space. */
+.guitar-helper:has(.guitar-helper-body[data-fretboard="0"]) {
+  grid-template-rows: auto auto;
+  height: auto;
+  max-height: 60vh;
+}
+
+.guitar-helper-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+.guitar-helper-head .gh-title {
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.guitar-helper-head .gh-summary {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--ink-soft);
+}
+.guitar-helper-head .gh-summary strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.guitar-helper-head .gh-summary-sep { color: var(--ink-faint); }
+.guitar-helper-head .gh-summary-box {
+  color: var(--accent);
+  font-size: 11.5px;
+}
+.guitar-helper-head .gh-tuning {
+  margin-left: auto;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.guitar-helper-head .gh-close {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.guitar-helper-head .gh-close:hover {
+  color: var(--ink);
+  border-color: var(--ink-line);
+}
+
+/* Left tool rail inside the panel — Obsidian-style vertical icon strip */
+.gh-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  padding: 8px 4px;
+  background: var(--bg-spine);
+  border-right: 1px solid var(--hairline);
+  min-width: 0;
+}
+.gh-rail-btn {
+  appearance: none;
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 56px;
+  padding: 8px 4px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.gh-rail-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--ink);
+}
+.gh-rail-btn[data-active="1"] {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.gh-rail-btn[data-active="1"] .gh-rail-badge {
+  background: var(--accent);
+  color: var(--bg);
+}
+.gh-rail-label {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.gh-rail-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  min-width: 14px;
+  height: 13px;
+  padding: 0 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  border-radius: 7px;
+  background: var(--hairline);
+  color: var(--ink-soft);
+}
+
+/* Controls row */
+.guitar-helper .gh-controls {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-panel);
+}
+.guitar-helper .gh-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+.guitar-helper .gh-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.guitar-helper .gh-group-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.guitar-helper .gh-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.guitar-helper .gh-divider {
+  display: inline-block;
+  align-self: stretch;
+  width: 1px;
+  background: var(--hairline);
+  margin: 2px 0;
+}
+@media (max-width: 900px) {
+  .guitar-helper .gh-divider-tones,
+  .guitar-helper .gh-group-tones { display: none; }
+}
+
+/* Chip — namespaced under .guitar-helper so it doesn't collide with toolbar */
+.guitar-helper .chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  min-width: 24px;
+  padding: 0 7px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink);
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  white-space: nowrap;
+}
+.guitar-helper .chip:hover {
+  background: var(--bg-sunken);
+  border-color: var(--ink-line);
+}
+.guitar-helper .chip[data-active="true"] {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+.guitar-helper .chip[data-tone="neutral"][data-active="true"] {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.guitar-helper .segmented {
+  display: inline-flex;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 5px;
+  overflow: hidden;
+  padding: 1px;
+  gap: 1px;
+}
+.guitar-helper .segmented .chip {
+  border: 0;
+  border-radius: 3px;
+  height: 20px;
+  background: transparent;
+}
+.guitar-helper .segmented .chip:hover {
+  background: var(--bg-sunken);
+}
+.guitar-helper .segmented .chip[data-active="true"] {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.guitar-helper .tone {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  background: var(--bg-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  color: var(--ink);
+}
+.guitar-helper .tone .deg {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--ink-faint);
+}
+.guitar-helper .tone[data-role="root"] {
+  background: rgba(239, 74, 74, 0.14);
+  color: #b62929;
+  border-color: rgba(239, 74, 74, 0.35);
+}
+.guitar-helper .tone[data-role="root"] .deg { color: #b62929; }
+.guitar-helper .tone[data-role="blues"] {
+  background: rgba(122, 65, 198, 0.14);
+  color: #6c30b3;
+  border-color: rgba(122, 65, 198, 0.35);
+}
+.guitar-helper .tone[data-role="blues"] .deg { color: #6c30b3; }
+
+.guitar-helper .mono { font-family: var(--font-mono); }
+
+/* Dark mode tone chips need higher-contrast text */
+[data-dark="1"] .guitar-helper .tone[data-role="root"] {
+  color: #ffb3b3;
+  border-color: rgba(239, 74, 74, 0.45);
+}
+[data-dark="1"] .guitar-helper .tone[data-role="root"] .deg { color: #ff8a8a; }
+[data-dark="1"] .guitar-helper .tone[data-role="blues"] {
+  color: #d9bdff;
+  border-color: rgba(176, 115, 245, 0.45);
+}
+[data-dark="1"] .guitar-helper .tone[data-role="blues"] .deg { color: #c39cff; }
+
+/* Body: tool rail | fretboard | chord drawer */
+.guitar-helper-body {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: auto 1fr 260px;
+  gap: 0;
+  overflow: hidden;
+}
+.guitar-helper-body[data-fretboard="0"][data-chords="1"] {
+  grid-template-columns: auto 1fr;
+}
+.guitar-helper-body[data-fretboard="1"][data-chords="0"] {
+  grid-template-columns: auto 1fr;
+}
+.guitar-helper-body[data-fretboard="0"][data-chords="0"] {
+  grid-template-columns: auto 1fr;
+}
+
+/* Right chord-palette drawer */
+.guitar-helper-chords {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--hairline);
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+.guitar-helper-body[data-fretboard="0"] .guitar-helper-chords {
+  border-left: 0;
+}
+.gh-chords-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.gh-chords-title { font-weight: 600; }
+.gh-chords-count { color: var(--ink-faint); font-size: 10.5px; }
+.gh-chords-grid {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 10px;
+  overflow-y: auto;
+  align-content: start;
+  scrollbar-width: thin;
+  flex: 1;
+  min-height: 0;
+}
+.gh-chords-empty {
+  padding: 16px;
+  font-size: 12px;
+  color: var(--ink-faint);
+  text-align: center;
+  font-style: normal;
+}
+
+.gh-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--ink-faint);
+  font-size: 12.5px;
+  text-align: center;
+}
+
+/* Fretboard host: scrollable area filling the remaining helper height */
+.guitar-helper-board {
+  min-height: 0;
+  padding: 8px 10px 10px;
+  display: flex;
+  overflow: hidden;
+}
+.fretboard-host {
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  align-items: center;
+  scrollbar-width: thin;
+}
+.fretboard-svg { display: block; user-select: none; }

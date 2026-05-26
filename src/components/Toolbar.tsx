@@ -16,6 +16,9 @@ interface Props {
   onTempoChange: (bpm: number) => void
   fontScale: number
   onFontScaleChange: (n: number) => void
+  showHelper: boolean
+  onShowHelperChange: (v: boolean) => void
+  showHelperToggle: boolean
   themeKey: 'atelier' | 'studio'
 }
 
@@ -159,6 +162,21 @@ export default function Toolbar(p: Props) {
               <span className="control-btn-text-large">A</span>
             </button>
           </ControlGroup>
+
+          {p.showHelperToggle && (
+            <ControlGroup label="Helper">
+              <button
+                className="control-btn control-btn-toggle"
+                data-active={p.showHelper ? '1' : '0'}
+                onClick={() => p.onShowHelperChange(!p.showHelper)}
+                title="Toggle guitar helper (⌘⇧G)"
+                aria-label="Toggle guitar helper"
+                aria-pressed={p.showHelper}
+              >
+                Guitar
+              </button>
+            </ControlGroup>
+          )}
         </div>
       </div>
     </header>

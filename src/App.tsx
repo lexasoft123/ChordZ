@@ -17,6 +17,7 @@ interface PrefState {
   dark: boolean
   preferFlats: boolean
   fontScale: number
+  showHelper: boolean
 }
 
 const PREFS_KEY = 'chordz:prefs:v1'
@@ -39,9 +40,10 @@ function loadPrefs(): PrefState {
       dark: !!p.dark,
       preferFlats: !!p.preferFlats,
       fontScale: clampScale(typeof p.fontScale === 'number' ? p.fontScale : 1),
+      showHelper: !!p.showHelper,
     }
   } catch {
-    return { theme: 'atelier', dark: false, preferFlats: false, fontScale: 1 }
+    return { theme: 'atelier', dark: false, preferFlats: false, fontScale: 1, showHelper: false }
   }
 }
 
@@ -115,6 +117,9 @@ export default function App() {
       } else if (e.key === '0') {
         e.preventDefault()
         setPrefs((p) => ({ ...p, fontScale: 1 }))
+      } else if (e.shiftKey && (e.key === 'G' || e.key === 'g')) {
+        e.preventDefault()
+        setPrefs((p) => ({ ...p, showHelper: !p.showHelper }))
       }
     }
     window.addEventListener('keydown', onKey)
@@ -191,6 +196,8 @@ export default function App() {
     fontScale: prefs.fontScale,
     onFontScaleChange: (n: number) =>
       setPrefs((p) => ({ ...p, fontScale: clampScale(n) })),
+    showHelper: prefs.showHelper,
+    onShowHelperChange: (v: boolean) => setPrefs((p) => ({ ...p, showHelper: v })),
   }
 
   return (

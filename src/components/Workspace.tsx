@@ -8,6 +8,8 @@ import Editor from './Editor'
 import MetadataPanel from './MetadataPanel'
 import Player from './Player'
 import PerformanceOverlay from './PerformanceOverlay'
+import GuitarHelper from './GuitarHelper'
+import { rootToPitchClass, type PitchClass } from '../lib/scales'
 
 export type Mode = 'preview' | 'edit' | 'split'
 
@@ -29,8 +31,23 @@ export interface WorkspaceProps {
   onDarkChange: (v: boolean) => void
   fontScale: number
   onFontScaleChange: (n: number) => void
+  showHelper: boolean
+  onShowHelperChange: (v: boolean) => void
   /** When true, hide sidebar + metadata so the pane shows only the song surface. Used by Compare. */
   compact?: boolean
+}
+
+function songRootPc(song: { meta: { key?: string } } | null): PitchClass | undefined {
+  if (!song?.meta.key) return undefined
+  const raw = song.meta.key.trim()
+  const match = raw.match(/^([A-G])([#b]?)/)
+  if (!match) return undefined
+  const note = match[1] + (match[2] || '')
+  try {
+    return rootToPitchClass(note)
+  } catch {
+    return undefined
+  }
 }
 
 export default function Workspace(props: WorkspaceProps) {
@@ -88,6 +105,9 @@ export default function Workspace(props: WorkspaceProps) {
               }}
               fontScale={props.fontScale}
               onFontScaleChange={props.onFontScaleChange}
+              showHelper={props.showHelper}
+              onShowHelperChange={props.onShowHelperChange}
+              showHelperToggle={!props.compact}
               themeKey={props.themeKey}
             />
             <div className={`workspace-body mode-${mode}`}>
@@ -122,7 +142,25 @@ export default function Workspace(props: WorkspaceProps) {
                 />
               )}
             </div>
-            <Player song={displaySong} themeKey={props.themeKey} />
+            {props.showHelper && !props.compact && (
+              <GuitarHelper
+                key={selectedSong?.id ?? 'no-song'}
+                song={displaySong}
+                initialRoot={songRootPc(displaySong)}
+                initialScale={
+                  displaySong?.meta.key && /m\b|minor/i.test(displaySong.meta.key)
+                    ? 'minor'
+                    : 'major'
+                }
+                onClose={() => props.onShowHelperChange(false)}
+              />
+            )}
+            <Player
+              song={displaySong}
+              themeKey={props.themeKey}
+              showHelper={!props.compact ? props.showHelper : undefined}
+              onShowHelperChange={!props.compact ? props.onShowHelperChange : undefined}
+            />
             {performance && (
               <PerformanceOverlay
                 song={displaySong}
