@@ -1,28 +1,56 @@
-*, *::before, *::after { box-sizing: border-box; }
-html, body, #root { height: 100%; }
+/* The kit already resets `button` and paints the body ground at zero
+   specificity (`:where(body)`), so what is left here is the page box and
+   the few element defaults the kit has no opinion about. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   margin: 0;
+  font-size: 14px;
+  overflow: hidden;
+  user-select: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  overflow: hidden;
-  background: #F6F0E4;
 }
-button {
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+
+/* Lyrics and the ChordPro source are text you copy out of, not chrome. */
+.preview,
+.editor,
+.perf-overlay-scroll {
+  user-select: text;
 }
-input, textarea, select {
+
+input,
+textarea,
+select {
   font: inherit;
   color: inherit;
   background: none;
   border: none;
   outline: none;
 }
-ul { list-style: none; padding: 0; margin: 0; }
-a { color: inherit; }
-::selection { background: rgba(181, 73, 28, 0.22); color: inherit; }
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(255, 160, 40, 0.35);
+}

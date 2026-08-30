@@ -1,12 +1,111 @@
-/* Shared token shape. Atelier & Studio supply concrete values. */
+/* ════════════════════════════════════════════════════════════════
+   ChordZ · night-studio
+
+   Every colour in the app comes from @singz/ui. The app's own short
+   names below are ALIASES, not copies — one place defines a colour,
+   and the kit and the app can never drift apart the way two hand-
+   transcribed palettes do.
+
+   Rule: never write a literal colour outside this file. The one exception
+   is Fretboard.tsx, whose rosewood/pearl/nickel gradients are an instrument's
+   materials rather than UI chrome; its flat colours still come from here.
+   ════════════════════════════════════════════════════════════════ */
+
 :root {
-  --titlebar-h: 44px;
+  /* ─── surfaces ─── */
+  --bg: var(--sz-bg);
+  --panel: var(--sz-panel);
+  --panel-deep: var(--sz-panel-deep);
+  --surface-raised: var(--sz-surface-raised);
+  --glass-fill: var(--sz-glass-fill);
+  --control-fill: var(--sz-control-fill);
+  --footer-fill: var(--sz-footer-fill);
+
+  /* ─── hairlines ─── */
+  --line: var(--sz-line);
+  --line-strong: var(--sz-line-strong);
+
+  /* ─── foreground ─── */
+  --text: var(--sz-text);
+  --dim: var(--sz-dim);
+  --faint: var(--sz-faint);
+
+  /* ─── brand ─── */
+  --accent: var(--sz-accent);
+  --accent-deep: var(--sz-accent-deep);
+  --accent-soft: var(--sz-accent-soft);
+  --accent-ink: var(--sz-accent-ink);
+  --accent-line: var(--sz-accent-line);
+  --danger: var(--sz-danger);
+  --success: var(--sz-success);
+
+  /* ─── type ───
+     The kit declares --sz-font-* but ships no faces, so the app assigns
+     THE KIT'S variables (not parallel ones of its own): a kit rule that
+     reads var(--sz-font-display) cannot see an app-local --font-display,
+     and the failure mode is every pill button silently falling back to
+     system-ui. The app's own aliases then read from the kit's. */
+  --sz-font-display: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  --sz-font-mono: 'Martian Mono Variable', ui-monospace, 'SF Mono', monospace;
+  --font-display: var(--sz-font-display);
+  --font-mono: var(--sz-font-mono);
+
+  /* ─── metrics ─── */
+  --titlebar-h: 52px; /* matches the kit's .titlebar */
   --sidebar-w: 264px;
-  --meta-w: 280px;
-  --player-h: 56px;
+  --meta-w: 288px;
+  --player-h: 60px;
+  --radius-sm: 7px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.6, 0, 0.4, 1);
   --t-fast: 120ms;
   --t-med: 220ms;
-  --t-slow: 380ms;
+
+  /* ─── chord diagrams ─── */
+  --diagram-string: color-mix(in srgb, var(--text) 45%, transparent);
+  --diagram-fret: color-mix(in srgb, var(--text) 28%, transparent);
+  --diagram-nut: color-mix(in srgb, var(--text) 70%, transparent);
+  --diagram-dot: var(--accent);
+  --diagram-dot-text: var(--accent-ink);
+  --diagram-open: var(--text);
+  --diagram-mute: var(--faint);
+  --diagram-barre: var(--accent);
+  --diagram-strokew: 1px;
+
+  /* ─── fretboard ───
+     Hues chosen to sit beside the kit's stem palette rather than beside
+     each other: a box outline must never read as another box's. */
+  --fb-board-top: #251d15;
+  --fb-board-bot: #15110d;
+  --fb-fret: #8a7f6d;
+  --fb-string: #d9cfba;
+  --fb-number: var(--dim);
+  --fb-number-faint: var(--faint);
+  --fb-label-bg: var(--panel-deep);
+  --fb-note-text: #fffaf2;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ATELIER — the same design in daylight.
+
+   The palette itself now ships in the kit: `data-sz-palette="atelier"` on
+   <html> re-defines every --sz-* token, and because the app's names above
+   are aliases rather than copies, the whole of ChordZ follows. What is left
+   here is only what the kit has no opinion about — a chord diagram and a
+   fretboard are ChordZ's own furniture.
+   ════════════════════════════════════════════════════════════════ */
+
+:root[data-sz-palette='atelier'] {
+  /* Thin dark lines wash out on paper the way thin light ones do not. */
+  --diagram-string: color-mix(in srgb, var(--text) 60%, transparent);
+  --diagram-fret: color-mix(in srgb, var(--text) 40%, transparent);
+
+  /* A rosewood board still reads as rosewood on a light page — it is an
+     instrument sitting on the paper, not a panel of the UI. */
+  --fb-board-top: #4a3a29;
+  --fb-board-bot: #35281c;
+  --fb-fret: #cbbfa8;
+  --fb-string: #f2e9d8;
+  --fb-label-bg: #2a1f14;
 }

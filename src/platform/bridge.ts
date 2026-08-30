@@ -5,6 +5,8 @@
  * portable when we later wrap the app for iOS/Android.
  */
 
+import type { WindowControlsApi } from '@singz/ui'
+
 export type Platform = 'electron' | 'web' | 'mobile'
 
 export interface Bridge {
@@ -13,6 +15,9 @@ export interface Bridge {
   loadLibrary(): Promise<string | null>
   saveLibrary(data: string): Promise<boolean>
   openAudioFile(): Promise<string | null>
+  /** Frameless-window chrome. Absent on the web, and on macOS the window
+   *  keeps its native traffic lights, so the kit's buttons stay unmounted. */
+  windowControls?: WindowControlsApi
 }
 
 const STORAGE_KEY = 'chordz:library'

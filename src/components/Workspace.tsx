@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Button } from '@singz/ui'
 import type { Song } from '../lib/chordpro'
 import { serializeChordPro } from '../lib/chordpro'
 import Sidebar from './Sidebar'
@@ -14,7 +15,6 @@ import { rootToPitchClass, type PitchClass } from '../lib/scales'
 export type Mode = 'preview' | 'edit' | 'split'
 
 export interface WorkspaceProps {
-  themeKey: 'atelier' | 'studio'
   songs: Song[]
   selectedSong: Song | null
   displaySong: Song | null
@@ -27,14 +27,10 @@ export interface WorkspaceProps {
   onDeleteSong: (id: string) => void
   preferFlats: boolean
   onPreferFlatsChange: (v: boolean) => void
-  dark: boolean
-  onDarkChange: (v: boolean) => void
   fontScale: number
   onFontScaleChange: (n: number) => void
   showHelper: boolean
   onShowHelperChange: (v: boolean) => void
-  /** When true, hide sidebar + metadata so the pane shows only the song surface. Used by Compare. */
-  compact?: boolean
 }
 
 function songRootPc(song: { meta: { key?: string } } | null): PitchClass | undefined {
@@ -54,27 +50,22 @@ export default function Workspace(props: WorkspaceProps) {
   const [mode, setMode] = useState<Mode>('preview')
   const [performance, setPerformance] = useState(false)
   const [scrollSpeed, setScrollSpeed] = useState(20) // px/sec
-  const [metaOpen, setMetaOpen] = useState(!props.compact)
+  const [metaOpen, setMetaOpen] = useState(true)
 
   const { selectedSong, displaySong } = props
 
   return (
     <div
-      className={`workspace theme-${props.themeKey}`}
-      data-compact={props.compact ? '1' : '0'}
-      data-dark={props.dark ? '1' : '0'}
+      className="workspace"
       style={{ ['--font-scale' as string]: props.fontScale }}
     >
-      {!props.compact && (
-        <Sidebar
-          songs={props.songs}
-          selectedId={selectedSong?.id ?? null}
-          onSelect={props.onSelectSong}
-          onNew={props.onNewSong}
-          onDelete={props.onDeleteSong}
-          themeKey={props.themeKey}
-        />
-      )}
+      <Sidebar
+        songs={props.songs}
+        selectedId={selectedSong?.id ?? null}
+        onSelect={props.onSelectSong}
+        onNew={props.onNewSong}
+        onDelete={props.onDeleteSong}
+      />
       <main className="workspace-main">
         {displaySong ? (
           <>
@@ -107,24 +98,18 @@ export default function Workspace(props: WorkspaceProps) {
               onFontScaleChange={props.onFontScaleChange}
               showHelper={props.showHelper}
               onShowHelperChange={props.onShowHelperChange}
-              showHelperToggle={!props.compact}
-              themeKey={props.themeKey}
             />
             <div className={`workspace-body mode-${mode}`}>
-              {(mode === 'preview' || mode === 'split') && (
-                <Preview song={displaySong} themeKey={props.themeKey} />
-              )}
+              {(mode === 'preview' || mode === 'split') && <Preview song={displaySong} />}
               {(mode === 'edit' || mode === 'split') && selectedSong && (
                 <Editor
                   source={serializeChordPro(selectedSong)}
                   onChange={(src) => props.onUpdateSongSource(selectedSong.id, src)}
-                  themeKey={props.themeKey}
                 />
               )}
-              {metaOpen && !props.compact && (
+              {metaOpen && (
                 <MetadataPanel
                   song={displaySong}
-                  themeKey={props.themeKey}
                   onTagsChange={(tags) => {
                     if (!selectedSong) return
                     props.onUpdateSong({
@@ -142,7 +127,7 @@ export default function Workspace(props: WorkspaceProps) {
                 />
               )}
             </div>
-            {props.showHelper && !props.compact && (
+            {props.showHelper && (
               <GuitarHelper
                 key={selectedSong?.id ?? 'no-song'}
                 song={displaySong}
@@ -157,9 +142,8 @@ export default function Workspace(props: WorkspaceProps) {
             )}
             <Player
               song={displaySong}
-              themeKey={props.themeKey}
-              showHelper={!props.compact ? props.showHelper : undefined}
-              onShowHelperChange={!props.compact ? props.onShowHelperChange : undefined}
+              showHelper={props.showHelper}
+              onShowHelperChange={props.onShowHelperChange}
             />
             {performance && (
               <PerformanceOverlay
@@ -167,18 +151,17 @@ export default function Workspace(props: WorkspaceProps) {
                 onClose={() => setPerformance(false)}
                 scrollSpeed={scrollSpeed}
                 onScrollSpeedChange={setScrollSpeed}
-                themeKey={props.themeKey}
               />
             )}
           </>
         ) : (
           <div className="workspace-empty">
             <div className="workspace-empty-inner">
-              <div className="workspace-empty-mark">∅</div>
+              <div className="workspace-empty-mark">♪</div>
               <div className="workspace-empty-title">No song selected</div>
-              <button className="workspace-empty-btn" onClick={props.onNewSong}>
+              <Button variant="primary" onClick={props.onNewSong}>
                 New song
-              </button>
+              </Button>
             </div>
           </div>
         )}

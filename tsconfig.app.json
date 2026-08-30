@@ -17,7 +17,16 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
+    "paths": {
+      "@/*": ["src/*"],
+      // @singz/ui is installed from a working copy that carries its own
+      // React 19 @types, so its .d.ts would otherwise be checked against a
+      // second, incompatible React — every kit component then fails as "not
+      // a valid JSX element type". Pin every resolution of react to this
+      // project's copy. The kit is written for 18.3 as well as 19.
+      "react": ["./node_modules/@types/react"],
+      "react-dom": ["./node_modules/@types/react-dom"]
+    }
   },
   "include": ["src"]
 }

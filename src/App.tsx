@@ -4,8 +4,7 @@ import { parseChordPro, serializeChordPro, type Song } from './lib/chordpro'
 import { transposeSong } from './lib/transpose'
 import { SAMPLE_SONGS } from './lib/samples'
 import Workspace from './components/Workspace'
-import ThemeSwitcher, { type ThemeMode } from './components/ThemeSwitcher'
-import Titlebar from './components/Titlebar'
+import Titlebar, { type Palette } from './components/Titlebar'
 
 interface LibraryState {
   songs: Song[]
@@ -13,14 +12,13 @@ interface LibraryState {
 }
 
 interface PrefState {
-  theme: ThemeMode
-  dark: boolean
+  palette: Palette
   preferFlats: boolean
   fontScale: number
   showHelper: boolean
 }
 
-const PREFS_KEY = 'chordz:prefs:v1'
+const PREFS_KEY = 'chordz:prefs:v2'
 const FONT_SCALE_MIN = 0.7
 const FONT_SCALE_MAX = 2.2
 const FONT_SCALE_STEP = 0.1
@@ -36,14 +34,13 @@ function loadPrefs(): PrefState {
     if (!raw) throw 0
     const p = JSON.parse(raw)
     return {
-      theme: (p.theme as ThemeMode) || 'atelier',
-      dark: !!p.dark,
+      palette: p.palette === 'atelier' ? 'atelier' : 'night',
       preferFlats: !!p.preferFlats,
       fontScale: clampScale(typeof p.fontScale === 'number' ? p.fontScale : 1),
       showHelper: !!p.showHelper,
     }
   } catch {
-    return { theme: 'atelier', dark: false, preferFlats: false, fontScale: 1, showHelper: false }
+    return { palette: 'night', preferFlats: false, fontScale: 1, showHelper: false }
   }
 }
 
@@ -97,11 +94,14 @@ export default function App() {
 
   useEffect(() => savePrefs(prefs), [prefs])
 
-  // Apply dark class to document so OS chrome / scrollbars also feel right
+  // The kit ships the light palette; switching it on is one attribute.
+  // On <html>, not on a wrapper: the modal scrim and the ambient layers
+  // both render outside the app subtree.
   useEffect(() => {
-    document.documentElement.dataset.dark = prefs.dark ? '1' : '0'
-    document.documentElement.dataset.theme = prefs.theme
-  }, [prefs.dark, prefs.theme])
+    const root = document.documentElement
+    if (prefs.palette === 'atelier') root.setAttribute('data-sz-palette', 'atelier')
+    else root.removeAttribute('data-sz-palette')
+  }, [prefs.palette])
 
   // Keyboard shortcuts: Cmd/Ctrl + / − / 0 control preview font size
   useEffect(() => {
@@ -177,56 +177,30 @@ export default function App() {
     setTransposeBySong((t) => ({ ...t, [id]: steps }))
   }, [])
 
-  const workspaceProps = {
-    songs,
-    selectedSong,
-    displaySong,
-    transpose,
-    onTransposeChange: (n: number) =>
-      selectedSong && setTranspose(selectedSong.id, n),
-    onSelectSong: selectSong,
-    onUpdateSong: updateSong,
-    onUpdateSongSource: updateSongSource,
-    onNewSong: newSong,
-    onDeleteSong: deleteSong,
-    preferFlats: prefs.preferFlats,
-    onPreferFlatsChange: (v: boolean) => setPrefs({ ...prefs, preferFlats: v }),
-    dark: prefs.dark,
-    onDarkChange: (v: boolean) => setPrefs({ ...prefs, dark: v }),
-    fontScale: prefs.fontScale,
-    onFontScaleChange: (n: number) =>
-      setPrefs((p) => ({ ...p, fontScale: clampScale(n) })),
-    showHelper: prefs.showHelper,
-    onShowHelperChange: (v: boolean) => setPrefs((p) => ({ ...p, showHelper: v })),
-  }
-
   return (
-    <div className={`app-root theme-${prefs.theme}`} data-dark={prefs.dark ? '1' : '0'}>
+    <div className="app">
       <Titlebar
-        theme={prefs.theme}
-        right={
-          <ThemeSwitcher
-            value={prefs.theme}
-            onChange={(t) => setPrefs({ ...prefs, theme: t })}
-            dark={prefs.dark}
-            onDarkChange={(v) => setPrefs({ ...prefs, dark: v })}
-          />
-        }
+        palette={prefs.palette}
+        onPaletteChange={(palette) => setPrefs((p) => ({ ...p, palette }))}
       />
-      {prefs.theme === 'compare' ? (
-        <div className="compare-split">
-          <div className="compare-pane theme-atelier" data-dark={prefs.dark ? '1' : '0'}>
-            <div className="compare-label">Atelier</div>
-            <Workspace {...workspaceProps} themeKey="atelier" compact />
-          </div>
-          <div className="compare-pane theme-studio" data-dark={prefs.dark ? '1' : '0'}>
-            <div className="compare-label">Studio</div>
-            <Workspace {...workspaceProps} themeKey="studio" compact />
-          </div>
-        </div>
-      ) : (
-        <Workspace {...workspaceProps} themeKey={prefs.theme} />
-      )}
+      <Workspace
+        songs={songs}
+        selectedSong={selectedSong}
+        displaySong={displaySong}
+        transpose={transpose}
+        onTransposeChange={(n) => selectedSong && setTranspose(selectedSong.id, n)}
+        onSelectSong={selectSong}
+        onUpdateSong={updateSong}
+        onUpdateSongSource={updateSongSource}
+        onNewSong={newSong}
+        onDeleteSong={deleteSong}
+        preferFlats={prefs.preferFlats}
+        onPreferFlatsChange={(v) => setPrefs((p) => ({ ...p, preferFlats: v }))}
+        fontScale={prefs.fontScale}
+        onFontScaleChange={(n) => setPrefs((p) => ({ ...p, fontScale: clampScale(n) }))}
+        showHelper={prefs.showHelper}
+        onShowHelperChange={(v) => setPrefs((p) => ({ ...p, showHelper: v }))}
+      />
     </div>
   )
 }

@@ -6,12 +6,10 @@ import ChordDiagram from './ChordDiagram'
 
 export default function MetadataPanel({
   song,
-  themeKey,
   onTagsChange,
   onArtistChange,
 }: {
   song: Song
-  themeKey: 'atelier' | 'studio'
   onTagsChange: (tags: string[]) => void
   onArtistChange: (artist: string) => void
 }) {
@@ -20,7 +18,7 @@ export default function MetadataPanel({
   const sounding = soundingKey(song.meta.key, song.meta.capo ?? 0)
 
   return (
-    <aside className="meta" data-theme={themeKey}>
+    <aside className="meta">
       <Section title="Details">
         <Field label="Artist">
           <input
@@ -99,7 +97,7 @@ export default function MetadataPanel({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="meta-section">
-      <h3 className="meta-section-title">{title}</h3>
+      <h3 className="eyebrow meta-section-title">{title}</h3>
       <div className="meta-section-body">{children}</div>
     </section>
   )

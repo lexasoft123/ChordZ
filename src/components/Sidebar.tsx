@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Badge, Button, Modal, ModalActions } from '@singz/ui'
 import type { Song } from '../lib/chordpro'
 
 interface Props {
@@ -7,11 +8,11 @@ interface Props {
   onSelect: (id: string) => void
   onNew: () => void
   onDelete: (id: string) => void
-  themeKey: 'atelier' | 'studio'
 }
 
-export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete, themeKey }: Props) {
+export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete }: Props) {
   const [query, setQuery] = useState('')
+  const [pendingDelete, setPendingDelete] = useState<Song | null>(null)
 
   const grouped = useMemo(() => {
     const byTag = new Map<string, Song[]>()
@@ -31,10 +32,12 @@ export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete, 
   return (
     <aside className="sidebar">
       <div className="sidebar-head">
-        <span className="sidebar-head-label">Library</span>
-        <button className="sidebar-new" onClick={onNew} title="New song" aria-label="New song">
-          +
-        </button>
+        <span className="eyebrow">Library</span>
+        <Button icon onClick={onNew} title="New song" aria-label="New song">
+          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
+            <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+        </Button>
       </div>
       <div className="sidebar-search">
         <input
@@ -45,12 +48,10 @@ export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete, 
         />
       </div>
       <nav className="sidebar-list">
-        {grouped.length === 0 && (
-          <div className="sidebar-empty">no matches</div>
-        )}
+        {grouped.length === 0 && <div className="sidebar-empty">no matches</div>}
         {grouped.map(([tag, list]) => (
           <div className="sidebar-group" key={tag}>
-            <div className="sidebar-group-label">{tag}</div>
+            <div className="eyebrow sidebar-group-label">{tag}</div>
             <ul>
               {list.map((s) => (
                 <li
@@ -60,12 +61,18 @@ export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete, 
                   onClick={() => onSelect(s.id)}
                   onContextMenu={(e) => {
                     e.preventDefault()
-                    if (confirm(`Delete "${s.meta.title}"?`)) onDelete(s.id)
+                    setPendingDelete(s)
                   }}
                 >
                   <span className="sidebar-item-title">{s.meta.title}</span>
                   <span className="sidebar-item-meta">
-                    {s.meta.key && <span className="sidebar-item-key">{s.meta.key}</span>}
+                    {/* caps={false} because "Am" set as "AM" is a different
+                        chord — A minor becomes A major. */}
+                    {s.meta.key && (
+                      <Badge caps={false} className="sidebar-item-key">
+                        {s.meta.key}
+                      </Badge>
+                    )}
                     {s.meta.tempo && <span className="sidebar-item-bpm">{s.meta.tempo}</span>}
                   </span>
                 </li>
@@ -77,6 +84,31 @@ export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete, 
       <div className="sidebar-foot">
         {songs.length} song{songs.length === 1 ? '' : 's'}
       </div>
+
+      {pendingDelete && (
+        <Modal onClose={() => setPendingDelete(null)} aria-label="Delete song">
+          <h2 className="modal-title">Delete this song?</h2>
+          <p className="modal-body">
+            “{pendingDelete.meta.title}” will be removed from the library. This cannot
+            be undone.
+          </p>
+          <ModalActions>
+            {/* `danger` alongside the default ghost, not variant="danger":
+                the kit's .pill.danger sets border-COLOR only and rides on the
+                border .ghost draws, so on its own it would have none. */}
+            <Button
+              className="danger"
+              onClick={() => {
+                onDelete(pendingDelete.id)
+                setPendingDelete(null)
+              }}
+            >
+              Delete
+            </Button>
+            <Button onClick={() => setPendingDelete(null)}>Keep</Button>
+          </ModalActions>
+        </Modal>
+      )}
     </aside>
   )
 }

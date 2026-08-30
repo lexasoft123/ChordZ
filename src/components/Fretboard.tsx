@@ -40,13 +40,18 @@ const STRING_NAMES = ['E', 'B', 'G', 'D', 'A', 'E']
 const SINGLE_INLAYS = new Set([3, 5, 7, 9, 15, 17, 19, 21])
 const DOUBLE_INLAYS = new Set([12, 24])
 
+/*
+ * Box outlines. The hues are the kit's stem palette — the same six a SingZ
+ * mixer lane can wear — so the two apps share one colour vocabulary, and no
+ * two adjacent boxes read as shades of each other.
+ */
 const BOX_COLORS: Record<BoxId, string> = {
-  0: '#22d3ee',
-  1: '#f5b942',
-  2: '#5e9bff',
-  3: '#34d399',
-  4: '#b073f5',
-  5: '#f87171',
+  0: '#27e7bb',
+  1: '#ffc53d',
+  2: '#527dff',
+  3: '#c7e06a',
+  4: '#da81da',
+  5: '#ff5c65',
 }
 
 function useIsMobile(breakpoint = 640) {
@@ -168,37 +173,42 @@ export function Fretboard({
       >
         <defs>
           <linearGradient id="board" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--fb-board-top, #1e2533)" />
-            <stop offset="100%" stopColor="var(--fb-board-bot, #141923)" />
+            <stop offset="0%" stopColor="var(--fb-board-top)" />
+            <stop offset="100%" stopColor="var(--fb-board-bot)" />
           </linearGradient>
 
+          {/* Warm pearl, not cold: an inlay on a tungsten-lit board picks up
+              the room's light like everything else in night-studio does. */}
           <radialGradient id="inlay" cx="35%" cy="30%" r="70%">
-            <stop offset="0%" stopColor="#e8eaf0" />
-            <stop offset="55%" stopColor="#9aa3b5" />
-            <stop offset="100%" stopColor="#4a5160" />
+            <stop offset="0%" stopColor="#f3ead6" />
+            <stop offset="55%" stopColor="#a89a80" />
+            <stop offset="100%" stopColor="#544a3c" />
           </radialGradient>
 
+          {/* The root is the accent — the one thing on the board that glows
+              like the rest of the app. Scale tones stay cool so the root is
+              never one amber circle among many. */}
           <radialGradient id="noteTone" cx="35%" cy="30%" r="75%">
-            <stop offset="0%" stopColor="#9bc0ff" />
-            <stop offset="55%" stopColor="#5e9bff" />
-            <stop offset="100%" stopColor="#2a5cb8" />
+            <stop offset="0%" stopColor="#9bb4ff" />
+            <stop offset="55%" stopColor="#527dff" />
+            <stop offset="100%" stopColor="#26429c" />
           </radialGradient>
 
           <radialGradient id="noteRoot" cx="35%" cy="30%" r="75%">
-            <stop offset="0%" stopColor="#ff8585" />
-            <stop offset="50%" stopColor="#ef4a4a" />
-            <stop offset="100%" stopColor="#9a1d1d" />
+            <stop offset="0%" stopColor="#ffd08a" />
+            <stop offset="50%" stopColor="#ffa028" />
+            <stop offset="100%" stopColor="#a85805" />
           </radialGradient>
 
           <radialGradient id="noteBlues" cx="35%" cy="30%" r="75%">
-            <stop offset="0%" stopColor="#daaaff" />
-            <stop offset="50%" stopColor="#b073f5" />
-            <stop offset="100%" stopColor="#6c30b3" />
+            <stop offset="0%" stopColor="#efb8ef" />
+            <stop offset="50%" stopColor="#da81da" />
+            <stop offset="100%" stopColor="#7c3b7c" />
           </radialGradient>
 
           <linearGradient id="nut" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#dde1e8" />
-            <stop offset="100%" stopColor="#9aa0ad" />
+            <stop offset="0%" stopColor="#efe4cf" />
+            <stop offset="100%" stopColor="#a3947c" />
           </linearGradient>
 
           <filter id="noteShadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -226,7 +236,7 @@ export function Fretboard({
           width={fretboardRight - fretboardLeft - 1}
           height={fretboardBottom - fretboardTop - 1}
           fill="none"
-          stroke="rgba(255, 255, 255, 0.05)"
+          stroke="rgba(255, 240, 214, 0.06)"
           strokeWidth="1"
           rx="3"
         />
@@ -296,7 +306,7 @@ export function Fretboard({
                   y={labelY - labelH / 2}
                   width={labelW}
                   height={labelH}
-                  fill={isActive ? color : '#1a1f2a'}
+                  fill={isActive ? color : 'var(--fb-label-bg)'}
                   fillOpacity={isActive ? 0.95 : 0.85}
                   stroke={color}
                   strokeOpacity={isActive ? 1 : 0.55}
@@ -310,7 +320,7 @@ export function Fretboard({
                   fontFamily="var(--font-display)"
                   fontSize="11"
                   fontWeight={600}
-                  fill={isActive ? '#0c0e12' : color}
+                  fill={isActive ? 'var(--sz-accent-ink)' : color}
                   style={{ pointerEvents: 'none', letterSpacing: '0.02em' }}
                 >
                   {labelText}
@@ -363,7 +373,7 @@ export function Fretboard({
               y1={fretboardTop}
               x2={x}
               y2={fretboardBottom}
-              stroke="#7d8595"
+              stroke="var(--fb-fret)"
               strokeWidth="1.8"
               opacity="0.7"
             />
@@ -381,7 +391,7 @@ export function Fretboard({
                 y1={y}
                 x2={fretboardRight}
                 y2={y}
-                stroke="#c8cdd8"
+                stroke="var(--fb-string)"
                 strokeWidth={thickness}
                 opacity="0.7"
               />
@@ -392,7 +402,7 @@ export function Fretboard({
                 fontFamily="var(--font-mono)"
                 fontSize="10"
                 fontWeight={500}
-                fill="#a0a8b8"
+                fill="var(--fb-number)"
               >
                 {STRING_NAMES[visualRow]}
               </text>
@@ -414,7 +424,7 @@ export function Fretboard({
               fontFamily="var(--font-mono)"
               fontSize="10.5"
               fontWeight={isMarked ? 600 : 400}
-              fill={isMarked ? '#a0a8b8' : '#5a6172'}
+              fill={isMarked ? 'var(--fb-number)' : 'var(--fb-number-faint)'}
               style={{ fontFeatureSettings: '"tnum"' }}
             >
               {fret}
@@ -475,7 +485,7 @@ export function Fretboard({
                 }
                 fontSize={labelMode === 'degree' ? '10.5' : '11'}
                 fontWeight={700}
-                fill="#ffffff"
+                fill="var(--fb-note-text)"
                 style={{
                   pointerEvents: 'none',
                   fontFeatureSettings:

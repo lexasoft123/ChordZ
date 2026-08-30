@@ -1,3 +1,4 @@
+import { Button, Chip, SegmentedControl } from '@singz/ui'
 import type { Song } from '../lib/chordpro'
 import type { Mode } from './Workspace'
 
@@ -18,13 +19,17 @@ interface Props {
   onFontScaleChange: (n: number) => void
   showHelper: boolean
   onShowHelperChange: (v: boolean) => void
-  showHelperToggle: boolean
-  themeKey: 'atelier' | 'studio'
 }
 
 const FONT_SCALE_STEP = 0.1
 const FONT_SCALE_MIN = 0.7
 const FONT_SCALE_MAX = 2.2
+
+const MODES: { value: Mode; label: string }[] = [
+  { value: 'preview', label: 'Preview' },
+  { value: 'split', label: 'Split' },
+  { value: 'edit', label: 'Edit' },
+]
 
 export default function Toolbar(p: Props) {
   const capo = p.song.meta.capo ?? 0
@@ -36,41 +41,34 @@ export default function Toolbar(p: Props) {
       <div className="toolbar-row toolbar-row-title">
         <div className="toolbar-titleblock">
           <h1 className="toolbar-title">{p.song.meta.title}</h1>
-          {p.song.meta.artist && (
-            <div className="toolbar-subtitle">{p.song.meta.artist}</div>
-          )}
+          {p.song.meta.artist && <div className="toolbar-subtitle">{p.song.meta.artist}</div>}
         </div>
         <div className="toolbar-actions">
-          <div className="mode-segmented" role="tablist">
-            {(['preview', 'split', 'edit'] as Mode[]).map((m) => (
-              <button
-                key={m}
-                role="tab"
-                aria-selected={p.mode === m}
-                data-active={p.mode === m ? '1' : '0'}
-                className="mode-segmented-btn"
-                onClick={() => p.onModeChange(m)}
-              >
-                {m === 'preview' ? 'Preview' : m === 'edit' ? 'Edit' : 'Split'}
-              </button>
-            ))}
-          </div>
-          <button
-            className="toolbar-perform"
-            onClick={p.onPerform}
-            title="Performance mode"
-          >
+          <SegmentedControl
+            options={MODES}
+            value={p.mode}
+            onChange={p.onModeChange}
+            aria-label="Editing mode"
+          />
+          <Button variant="primary" size="sm" onClick={p.onPerform} title="Performance mode">
             Perform
-          </button>
-          <button
+          </Button>
+          <Button
+            icon
+            active={p.metaOpen}
             className="toolbar-meta-toggle"
-            data-active={p.metaOpen ? '1' : '0'}
             onClick={p.onMetaToggle}
-            title="Toggle metadata"
-            aria-label="Toggle metadata"
+            title="Toggle details panel"
+            aria-label="Toggle details panel"
           >
-            ⊟
-          </button>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden>
+              <rect
+                x="1.5" y="2.5" width="11" height="9" rx="1.5"
+                fill="none" stroke="currentColor" strokeWidth="1.1"
+              />
+              <line x1="8.6" y1="2.5" x2="8.6" y2="11.5" stroke="currentColor" strokeWidth="1.1" />
+            </svg>
+          </Button>
         </div>
       </div>
 
@@ -81,35 +79,18 @@ export default function Toolbar(p: Props) {
           </ControlGroup>
 
           <ControlGroup label="Transpose">
-            <button
-              className="control-btn"
-              onClick={() => p.onTransposeChange(p.transpose - 1)}
-              aria-label="Transpose down"
-            >−</button>
+            <Stepper onClick={() => p.onTransposeChange(p.transpose - 1)} label="Transpose down" />
             <span className="control-readout control-readout-num">
-              {p.transpose > 0 ? '+' : ''}{p.transpose}
+              {p.transpose > 0 ? '+' : ''}
+              {p.transpose}
             </span>
-            <button
-              className="control-btn"
-              onClick={() => p.onTransposeChange(p.transpose + 1)}
-              aria-label="Transpose up"
-            >+</button>
+            <Stepper up onClick={() => p.onTransposeChange(p.transpose + 1)} label="Transpose up" />
           </ControlGroup>
 
           <ControlGroup label="Capo">
-            <button
-              className="control-btn"
-              onClick={() => p.onCapoChange(Math.max(0, capo - 1))}
-              aria-label="Lower capo"
-            >−</button>
-            <span className="control-readout control-readout-num">
-              {capo === 0 ? '—' : capo}
-            </span>
-            <button
-              className="control-btn"
-              onClick={() => p.onCapoChange(Math.min(12, capo + 1))}
-              aria-label="Raise capo"
-            >+</button>
+            <Stepper onClick={() => p.onCapoChange(Math.max(0, capo - 1))} label="Lower capo" />
+            <span className="control-readout control-readout-num">{capo === 0 ? '—' : capo}</span>
+            <Stepper up onClick={() => p.onCapoChange(Math.min(12, capo + 1))} label="Raise capo" />
           </ControlGroup>
 
           <ControlGroup label="BPM">
@@ -124,27 +105,30 @@ export default function Toolbar(p: Props) {
             />
           </ControlGroup>
 
-          <ControlGroup label="♭/♯">
-            <button
-              className="control-btn control-btn-toggle"
-              data-active={p.preferFlats ? '1' : '0'}
+          <ControlGroup label="Spelling">
+            <Chip
+              active={p.preferFlats}
               onClick={() => p.onPreferFlatsChange(!p.preferFlats)}
+              title={p.preferFlats ? 'Spelling chords with flats' : 'Spelling chords with sharps'}
+              aria-label="Toggle flats and sharps"
             >
               {p.preferFlats ? '♭' : '♯'}
-            </button>
+            </Chip>
           </ControlGroup>
 
           <ControlGroup label="Size">
-            <button
-              className="control-btn control-btn-text"
-              onClick={() => p.onFontScaleChange(Math.max(FONT_SCALE_MIN, p.fontScale - FONT_SCALE_STEP))}
+            <Chip
+              onClick={() =>
+                p.onFontScaleChange(Math.max(FONT_SCALE_MIN, p.fontScale - FONT_SCALE_STEP))
+              }
               disabled={p.fontScale <= FONT_SCALE_MIN + 0.001}
               aria-label="Decrease text size"
               title="Decrease text size (⌘−)"
             >
-              <span className="control-btn-text-small">A</span>
-            </button>
+              <span className="control-a-small">A</span>
+            </Chip>
             <button
+              type="button"
               className="control-readout control-readout-num control-readout-reset"
               onClick={() => p.onFontScaleChange(1)}
               aria-label="Reset text size"
@@ -152,41 +136,57 @@ export default function Toolbar(p: Props) {
             >
               {Math.round(p.fontScale * 100)}%
             </button>
-            <button
-              className="control-btn control-btn-text"
-              onClick={() => p.onFontScaleChange(Math.min(FONT_SCALE_MAX, p.fontScale + FONT_SCALE_STEP))}
+            <Chip
+              onClick={() =>
+                p.onFontScaleChange(Math.min(FONT_SCALE_MAX, p.fontScale + FONT_SCALE_STEP))
+              }
               disabled={p.fontScale >= FONT_SCALE_MAX - 0.001}
               aria-label="Increase text size"
               title="Increase text size (⌘+)"
             >
-              <span className="control-btn-text-large">A</span>
-            </button>
+              <span className="control-a-large">A</span>
+            </Chip>
           </ControlGroup>
 
-          {p.showHelperToggle && (
-            <ControlGroup label="Helper">
-              <button
-                className="control-btn control-btn-toggle"
-                data-active={p.showHelper ? '1' : '0'}
-                onClick={() => p.onShowHelperChange(!p.showHelper)}
-                title="Toggle guitar helper (⌘⇧G)"
-                aria-label="Toggle guitar helper"
-                aria-pressed={p.showHelper}
-              >
-                Guitar
-              </button>
-            </ControlGroup>
-          )}
+          <ControlGroup label="Helper">
+            <Chip
+              wide
+              active={p.showHelper}
+              onClick={() => p.onShowHelperChange(!p.showHelper)}
+              title="Toggle guitar helper (⌘⇧G)"
+              aria-label="Toggle guitar helper"
+            >
+              Guitar
+            </Chip>
+          </ControlGroup>
         </div>
       </div>
     </header>
   )
 }
 
+/* No `active`, so no aria-pressed: a stepper fires once, it is not a
+   toggle sitting in its off state. */
+function Stepper({
+  up = false,
+  onClick,
+  label,
+}: {
+  up?: boolean
+  onClick: () => void
+  label: string
+}) {
+  return (
+    <Chip onClick={onClick} aria-label={label}>
+      {up ? '+' : '−'}
+    </Chip>
+  )
+}
+
 function ControlGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="control-group">
-      <div className="control-label">{label}</div>
+      <div className="eyebrow">{label}</div>
       <div className="control-row">{children}</div>
     </div>
   )

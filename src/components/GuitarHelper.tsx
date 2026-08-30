@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Badge } from '@singz/ui'
 import { Fretboard } from './Fretboard'
 import { FretboardControls } from './FretboardControls'
 import ChordDiagram from './ChordDiagram'
@@ -51,7 +52,7 @@ export default function GuitarHelper({
   return (
     <section className="guitar-helper" aria-label="Guitar scale helper">
       <header className="guitar-helper-head">
-        <span className="gh-title">Guitar Helper</span>
+        <span className="eyebrow">Guitar Helper</span>
         <span className="gh-summary">
           <strong>{rootName}</strong>
           <span className="gh-summary-sep">·</span>
@@ -70,12 +71,15 @@ export default function GuitarHelper({
 
         {onClose && (
           <button
-            className="gh-close"
+            type="button"
+            className="round-ghost gh-close"
             onClick={onClose}
             aria-label="Hide guitar helper"
-            title="Hide guitar helper"
+            title="Hide guitar helper (⌘⇧G)"
           >
-            ×
+            <svg width="11" height="11" viewBox="0 0 11 11" aria-hidden>
+              <path d="M1 1l9 9M10 1L1 10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+            </svg>
           </button>
         )}
       </header>
@@ -120,9 +124,7 @@ export default function GuitarHelper({
           >
             <ChordIcon />
             <span className="gh-rail-label">Chords</span>
-            {chords.length > 0 && (
-              <span className="gh-rail-badge">{chords.length}</span>
-            )}
+            {chords.length > 0 && <Badge className="gh-rail-badge">{chords.length}</Badge>}
           </button>
         </nav>
 
@@ -141,8 +143,8 @@ export default function GuitarHelper({
         {showChords && (
           <aside className="guitar-helper-chords" aria-label="Chords in song">
             <div className="gh-chords-head">
-              <span className="gh-chords-title">Chords</span>
-              <span className="gh-chords-count mono">{chords.length}</span>
+              <span className="eyebrow">Chords</span>
+              <Badge className="mono">{chords.length}</Badge>
             </div>
             <div className="gh-chords-grid">
               {chords.length === 0 ? (

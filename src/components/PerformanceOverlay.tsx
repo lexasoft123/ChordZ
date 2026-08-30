@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useModalLock } from '@singz/ui'
 import type { Song } from '../lib/chordpro'
 import Preview from './Preview'
 
@@ -7,18 +8,20 @@ export default function PerformanceOverlay({
   onClose,
   scrollSpeed,
   onScrollSpeedChange,
-  themeKey,
 }: {
   song: Song
   onClose: () => void
   scrollSpeed: number
   onScrollSpeedChange: (n: number) => void
-  themeKey: 'atelier' | 'studio'
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number | null>(null)
   const lastTRef = useRef<number>(0)
   const [running, setRunning] = useState(true)
+
+  // Performance mode covers the whole app, so the kit's modal flag applies:
+  // it is what tells background animations to stop invalidating pixels.
+  useModalLock(true)
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -52,20 +55,31 @@ export default function PerformanceOverlay({
   }, [running, scrollSpeed])
 
   return (
-    <div className="perf-overlay" data-theme={themeKey}>
+    <div className="perf-overlay">
       <div className="perf-overlay-bar">
         <span className="perf-overlay-title">{song.meta.title}</span>
         <div className="perf-overlay-controls">
           <button
-            className="perf-overlay-btn"
+            type="button"
+            className="round-ghost"
             onClick={() => setRunning((r) => !r)}
             aria-label={running ? 'Pause scroll' : 'Resume scroll'}
           >
-            {running ? '❚❚' : '▶'}
+            {running ? (
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
+                <rect x="2" y="1.5" width="3" height="9" rx="1" fill="currentColor" />
+                <rect x="7" y="1.5" width="3" height="9" rx="1" fill="currentColor" />
+              </svg>
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
+                <path d="M3 1.6 10.4 6 3 10.4z" fill="currentColor" />
+              </svg>
+            )}
           </button>
           <label className="perf-overlay-speed">
-            <span>speed</span>
+            <span className="eyebrow">speed</span>
             <input
+              className="slider"
               type="range"
               min={4}
               max={120}
@@ -74,14 +88,20 @@ export default function PerformanceOverlay({
             />
           </label>
           <button
-            className="perf-overlay-btn perf-overlay-close"
+            type="button"
+            className="round-ghost perf-overlay-close"
             onClick={onClose}
+            title="Leave performance mode (Esc)"
             aria-label="Close performance mode"
-          >✕</button>
+          >
+            <svg width="11" height="11" viewBox="0 0 11 11" aria-hidden>
+              <path d="M1 1l9 9M10 1L1 10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
       </div>
       <div className="perf-overlay-scroll" ref={scrollRef}>
-        <Preview song={song} themeKey={themeKey} />
+        <Preview song={song} />
         <div style={{ height: '60vh' }} aria-hidden />
       </div>
     </div>

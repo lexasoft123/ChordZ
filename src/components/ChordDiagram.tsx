@@ -1,9 +1,10 @@
 import { lookupChord, type ChordShape } from '../lib/chords'
 
 /**
- * Two visual languages share one SVG. Theme CSS variables (`--diagram-*`)
- * drive stroke widths, colors, and corner radii so Atelier reads as
- * "inked sketch" and Studio reads as "technical drawing".
+ * The fingering diagram. Every stroke width and colour comes from a
+ * `--diagram-*` variable, so the same SVG reads correctly under both
+ * palettes — a hairline that reads on tungsten dark needs more weight
+ * behind it on paper.
  */
 export default function ChordDiagram({
   chord,

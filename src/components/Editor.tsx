@@ -9,11 +9,9 @@ import { useEffect, useRef } from 'react'
 export default function Editor({
   source,
   onChange,
-  themeKey,
 }: {
   source: string
   onChange: (s: string) => void
-  themeKey: 'atelier' | 'studio'
 }) {
   const ta = useRef<HTMLTextAreaElement>(null)
   const mirror = useRef<HTMLPreElement>(null)
@@ -32,7 +30,7 @@ export default function Editor({
   }, [])
 
   return (
-    <div className="editor" data-theme={themeKey}>
+    <div className="editor">
       <pre className="editor-mirror" ref={mirror} aria-hidden>
         {highlight(source)}
         {/* trailing newline so caret-at-end stays in view */}

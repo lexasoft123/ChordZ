@@ -1,3 +1,4 @@
+import { Chip, SegmentedControl } from '@singz/ui'
 import {
   ALL_ROOTS,
   hasOpenPosition,
@@ -26,6 +27,11 @@ type Props = {
 
 const SCALE_ORDER: ScaleTypeId[] = ['major', 'minor', 'major-pent', 'minor-pent']
 
+const LABEL_MODES = [
+  { value: 'note' as const, label: 'Notes' },
+  { value: 'degree' as const, label: 'Deg' },
+]
+
 export function FretboardControls({
   rootPc,
   onRootChange,
@@ -45,20 +51,14 @@ export function FretboardControls({
     <div className="gh-controls">
       <div className="gh-row">
         <div className="gh-group">
-          <span className="gh-group-label">Root</span>
+          <span className="eyebrow">Root</span>
           <div className="gh-chip-row">
             {ALL_ROOTS.map((name) => {
               const pc = rootToPitchClass(name)
               return (
-                <button
-                  key={name}
-                  onClick={() => onRootChange(pc)}
-                  className="chip"
-                  data-active={pc === rootPc}
-                  data-tone="neutral"
-                >
+                <Chip key={name} active={pc === rootPc} onClick={() => onRootChange(pc)}>
                   {name}
-                </button>
+                </Chip>
               )
             })}
           </div>
@@ -67,18 +67,18 @@ export function FretboardControls({
         <span aria-hidden className="gh-divider" />
 
         <div className="gh-group">
-          <span className="gh-group-label">Scale</span>
+          <span className="eyebrow">Scale</span>
           <div className="gh-chip-row">
             {SCALE_ORDER.map((id) => (
-              <button
+              <Chip
                 key={id}
+                wide
+                active={id === scaleType}
                 onClick={() => onScaleTypeChange(id)}
-                className="chip"
-                data-active={id === scaleType}
                 title={SCALES[id].name}
               >
                 {SCALES[id].shortName}
-              </button>
+              </Chip>
             ))}
           </div>
         </div>
@@ -86,15 +86,15 @@ export function FretboardControls({
         <span aria-hidden className="gh-divider" />
 
         <div className="gh-group">
-          <span className="gh-group-label">Box</span>
+          <span className="eyebrow">Box</span>
           <div className="gh-chip-row">
-            <button
+            <Chip
+              wide
+              active={selectedBox === null}
               onClick={() => onBoxChange(null)}
-              className="chip"
-              data-active={selectedBox === null}
             >
               All
-            </button>
+            </Chip>
             {scaleBoxes(scaleType)
               .filter(
                 (b) =>
@@ -102,15 +102,15 @@ export function FretboardControls({
                   hasOpenPosition(rootPc, STANDARD_TUNING_PC, scaleType),
               )
               .map((b) => (
-                <button
+                <Chip
                   key={b.id}
+                  wide={b.id === 0}
+                  active={selectedBox === b.id}
                   onClick={() => onBoxChange(b.id)}
-                  className="chip"
-                  data-active={selectedBox === b.id}
                   title={b.name}
                 >
                   {b.id === 0 ? 'Open' : <span className="mono">{b.id}</span>}
-                </button>
+                </Chip>
               ))}
           </div>
         </div>
@@ -118,25 +118,19 @@ export function FretboardControls({
         <span aria-hidden className="gh-divider" />
 
         <div className="gh-group">
-          <span className="gh-group-label">Labels</span>
-          <div className="segmented">
-            {(['note', 'degree'] as const).map((m) => (
-              <button
-                key={m}
-                onClick={() => onLabelModeChange(m)}
-                className="chip"
-                data-active={labelMode === m}
-              >
-                {m === 'note' ? 'Notes' : 'Deg'}
-              </button>
-            ))}
-          </div>
+          <span className="eyebrow">Labels</span>
+          <SegmentedControl
+            options={LABEL_MODES}
+            value={labelMode}
+            onChange={onLabelModeChange}
+            aria-label="Note labels"
+          />
         </div>
 
         <span aria-hidden className="gh-divider gh-divider-tones" />
 
         <div className="gh-group gh-group-tones">
-          <span className="gh-group-label">Tones</span>
+          <span className="eyebrow">Tones</span>
           <div className="gh-chip-row">
             {scalePcs.map((pc, i) => {
               const isRoot = i === 0
