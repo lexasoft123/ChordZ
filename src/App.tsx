@@ -3,6 +3,7 @@ import { bridge } from './platform/bridge'
 import { parseChordPro, serializeChordPro, type Song } from './lib/chordpro'
 import { transposeSong } from './lib/transpose'
 import { SAMPLE_SONGS } from './lib/samples'
+import { prefersLight } from './lib/prefersMotion'
 import Workspace from './components/Workspace'
 import Titlebar, { type Palette } from './components/Titlebar'
 import Toast from './components/Toast'
@@ -42,6 +43,8 @@ function loadPrefs(): PrefState {
     if (!raw) throw 0
     const p = JSON.parse(raw)
     return {
+      // A stored choice always wins, and stays won. The OS only decides for
+      // someone who has never expressed one.
       palette: p.palette === 'atelier' ? 'atelier' : 'night',
       preferFlats: !!p.preferFlats,
       fontScale: clampScale(typeof p.fontScale === 'number' ? p.fontScale : 1),
@@ -49,8 +52,10 @@ function loadPrefs(): PrefState {
       metaOpen: !!p.metaOpen,
     }
   } catch {
+    // No stored preference: follow the machine. A laptop set to a light
+    // appearance used to open this app in the dark anyway.
     return {
-      palette: 'night',
+      palette: prefersLight() ? 'atelier' : 'night',
       preferFlats: false,
       fontScale: 1,
       showHelper: false,
@@ -109,10 +114,18 @@ export default function App() {
           const parsed = JSON.parse(raw) as { sources: string[]; selectedId?: string | null }
           if (!Array.isArray(parsed.sources)) throw new Error('no sources array')
           const songsFromDisk = parsed.sources.map((src, i) => parseChordPro(src, `restored-${i}`))
-          setLibrary({
-            songs: songsFromDisk,
-            selectedId: parsed.selectedId ?? songsFromDisk[0]?.id ?? null,
-          })
+          /*
+           * Only honour a stored selection that still names a song we loaded.
+           * Ids are regenerated positionally on every read, so the id saved
+           * during a session that seeded samples names nothing afterwards —
+           * and the app reopened with no song selected and an empty page.
+           */
+          const stored = parsed.selectedId
+          const selectedId =
+            (stored && songsFromDisk.some((song) => song.id === stored) ? stored : null) ??
+            songsFromDisk[0]?.id ??
+            null
+          setLibrary({ songs: songsFromDisk, selectedId })
           canSave.current = true
         } catch {
           setSaveState('off')

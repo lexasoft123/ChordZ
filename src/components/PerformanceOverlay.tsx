@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { prefersReducedMotion } from '../lib/prefersMotion'
 import { useModalLock } from '@singz/ui'
 import type { Song } from '../lib/chordpro'
 import Preview from './Preview'
@@ -17,7 +18,13 @@ export default function PerformanceOverlay({
   const scrollRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number | null>(null)
   const lastTRef = useRef<number>(0)
-  const [running, setRunning] = useState(true)
+  /*
+   * The one animation the kit's CSS sweep cannot reach: this scroll is a rAF
+   * loop, not a transition. When the machine asks for less movement the page
+   * opens still and the player starts it — the control is right there, so
+   * this removes surprise motion without removing the feature.
+   */
+  const [running, setRunning] = useState(() => !prefersReducedMotion())
 
   // Performance mode covers the whole app, so the kit's modal flag applies:
   // it is what tells background animations to stop invalidating pixels.
