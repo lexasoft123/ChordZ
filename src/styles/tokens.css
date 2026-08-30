@@ -17,7 +17,6 @@
   --panel: var(--sz-panel);
   --panel-deep: var(--sz-panel-deep);
   --surface-raised: var(--sz-surface-raised);
-  --glass-fill: var(--sz-glass-fill);
   --control-fill: var(--sz-control-fill);
   --footer-fill: var(--sz-footer-fill);
 
@@ -25,19 +24,24 @@
   --line: var(--sz-line);
   --line-strong: var(--sz-line-strong);
 
-  /* ─── foreground ─── */
+  /* ─── foreground ───
+     Two text tiers, not three. --faint measures 2.98-3.44:1 against every
+     ground in both palettes, so it fails AA for anything a user reads; the
+     app used it for fifteen text rules and every one of them was a contrast
+     failure in the audit. It survives here for non-text only — the muted-
+     string stroke on a chord diagram, where the 3:1 non-text minimum
+     applies — and for incidental glyphs that carry nothing to read.
+     If you are about to set `color: var(--faint)`, you want --dim. */
   --text: var(--sz-text);
   --dim: var(--sz-dim);
   --faint: var(--sz-faint);
 
   /* ─── brand ─── */
   --accent: var(--sz-accent);
-  --accent-deep: var(--sz-accent-deep);
   --accent-soft: var(--sz-accent-soft);
   --accent-ink: var(--sz-accent-ink);
   --accent-line: var(--sz-accent-line);
   --danger: var(--sz-danger);
-  --success: var(--sz-success);
 
   /* ─── type ───
      The kit declares --sz-font-* but ships no faces, so the app assigns
@@ -50,17 +54,48 @@
   --font-display: var(--sz-font-display);
   --font-mono: var(--sz-font-mono);
 
+  /* ─── type scale ───
+     Six steps. Before this there were seventeen, with half-pixel stops at
+     9.5, 10.5, 11.5 and 12.5 — sizes chosen one rule at a time, which is
+     how you end up with four different "small label". Every size below is
+     named for the job it does; if a new rule needs a size that is not here,
+     the rule is wrong, not the scale.
+
+     Rounding used when collapsing the old values: nearest step, ties up. */
+  --t-micro: 10px;   /* eyebrow, badge, mono readouts, timecodes */
+  --t-ui: 12px;      /* controls, inputs, chips, secondary text */
+  --t-body: 14px;    /* list rows, panel values, the editor */
+  --t-lead: 17px;    /* the song line, the wordmark, a large diagram */
+  --t-display: 22px; /* the performance lyric */
+  --t-title: 30px;   /* the song title */
+
+  /* Typography *inside* a drawn instrument — a finger number in a chord
+     dot, a scale degree on a fret. Sized to the drawing's geometry, not to
+     the UI, and deliberately outside the scale above for that reason. */
+  --t-glyph: 8px;
+
+  /* ─── spacing scale ───
+     An 8px base with a 4px half-step, plus one 2px hairline for insets that
+     sit inside a line of text. Before this there were twenty-two values and
+     no grid. Collapsing rule: nearest step, ties toward the 8px base. */
+  --s-hair: 2px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+
   /* ─── metrics ─── */
-  --titlebar-h: 52px; /* matches the kit's .titlebar */
   --sidebar-w: 264px;
   --meta-w: 288px;
   --player-h: 60px;
   --radius-sm: 7px;
   --radius-md: 12px;
-  --radius-lg: 18px;
+  --radius-pill: 99px; /* the kit's badge/chip radius, not a second 999px */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --t-fast: 120ms;
-  --t-med: 220ms;
+  --dur-fast: 120ms;
 
   /* ─── chord diagrams ─── */
   --diagram-string: color-mix(in srgb, var(--text) 45%, transparent);
@@ -81,7 +116,6 @@
   --fb-fret: #8a7f6d;
   --fb-string: #d9cfba;
   --fb-number: var(--dim);
-  --fb-number-faint: var(--faint);
   --fb-label-bg: var(--panel-deep);
   --fb-note-text: #fffaf2;
 }

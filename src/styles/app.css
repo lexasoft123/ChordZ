@@ -27,7 +27,7 @@ body {
 
 .logo {
   font-weight: 800;
-  font-size: 17px;
+  font-size: var(--t-lead);
   letter-spacing: 0.02em;
   font-variation-settings: 'wdth' 88;
 }
@@ -35,14 +35,14 @@ body {
 .logo span {
   color: var(--accent);
   font-style: italic;
-  margin-left: 1px;
+  margin-left: var(--s-hair);
 }
 
 .titlebar-tag {
-  font-size: 11.5px;
-  color: var(--faint);
+  font-size: var(--t-ui);
+  color: var(--dim);
   letter-spacing: 0.02em;
-  margin-left: -4px;
+  margin-left: calc(-1 * var(--s-1));
 }
 
 .titlebar-fill {
@@ -122,19 +122,19 @@ body {
 .workspace-empty-inner {
   display: grid;
   justify-items: center;
-  gap: 14px;
+  gap: var(--s-3);
   text-align: center;
 }
 
 .workspace-empty-mark {
-  font-size: 44px;
+  font-size: var(--t-title);
   color: var(--accent);
   opacity: 0.5;
   line-height: 1;
 }
 
 .workspace-empty-title {
-  font-size: 15px;
+  font-size: var(--t-body);
   font-weight: 600;
   color: var(--dim);
 }
@@ -157,28 +157,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px 0 18px;
+  padding: 0 var(--s-3) 0 var(--s-4);
   border-bottom: 1px solid var(--line);
 }
 
 .sidebar-search {
   flex: none;
-  padding: 12px 14px 8px;
+  padding: var(--s-3) var(--s-3) var(--s-2);
 }
 
 .sidebar-search input {
   width: 100%;
-  padding: 7px 12px;
-  font-size: 12.5px;
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--t-ui);
   color: var(--text);
   background: var(--control-fill);
   border: 1px solid var(--line);
-  border-radius: 999px;
-  transition: border-color var(--t-fast);
+  border-radius: var(--radius-pill);
+  transition: border-color var(--dur-fast);
 }
 
 .sidebar-search input::placeholder {
-  color: var(--faint);
+  color: var(--dim);
 }
 
 .sidebar-search input:focus {
@@ -189,22 +189,22 @@ body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 4px 8px 12px;
+  padding: var(--s-1) var(--s-2) var(--s-3);
 }
 
 .sidebar-empty {
-  padding: 18px 10px;
-  font-size: 12px;
-  color: var(--faint);
+  padding: var(--s-4) var(--s-2);
+  font-size: var(--t-ui);
+  color: var(--dim);
   text-align: center;
 }
 
 .sidebar-group + .sidebar-group {
-  margin-top: 14px;
+  margin-top: var(--s-3);
 }
 
 .sidebar-group-label {
-  padding: 6px 10px 5px;
+  padding: var(--s-2) var(--s-2) var(--s-1);
 }
 
 .sidebar-item {
@@ -212,13 +212,13 @@ body {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-2);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition:
-    background var(--t-fast),
-    color var(--t-fast);
+    background var(--dur-fast),
+    color var(--dur-fast);
 }
 
 .sidebar-item:hover {
@@ -237,15 +237,15 @@ body {
   content: '';
   position: absolute;
   left: 0;
-  top: 7px;
-  bottom: 7px;
+  top: var(--s-2);
+  bottom: var(--s-2);
   width: 2px;
-  border-radius: 2px;
+  border-radius: var(--radius-pill);
   background: var(--accent);
 }
 
 .sidebar-item-title {
-  font-size: 13px;
+  font-size: var(--t-body);
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -260,20 +260,18 @@ body {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--s-2);
   font-family: var(--font-mono);
-  font-size: 9.5px;
-  color: var(--faint);
+  font-size: var(--t-micro);
+  color: var(--dim);
 }
 
-.sidebar-item-key {
-  padding: 1px 6px;
-  font-size: 9.5px;
-  font-weight: 600;
-  color: var(--dim);
-  border: 1px solid var(--line-strong);
-  border-radius: 99px;
-}
+/*
+ * .sidebar-item-key carries no rules: it was a hand-written restatement of
+ * the kit's .badge — same size, colour, border and radius — on an element
+ * that already IS a <Badge caps={false}>. The class stays on the element as
+ * a hook for the row layout below; the look comes from the kit.
+ */
 
 .sidebar-item-bpm::after {
   content: ' bpm';
@@ -282,10 +280,10 @@ body {
 
 .sidebar-foot {
   flex: none;
-  padding: 10px 18px;
+  padding: var(--s-2) var(--s-4);
   border-top: 1px solid var(--line);
-  font-size: 10.5px;
-  color: var(--faint);
+  font-size: var(--t-micro);
+  color: var(--dim);
   letter-spacing: 0.04em;
 }
 
@@ -294,7 +292,7 @@ body {
    ════════════════════════════════════════════════════════════════ */
 
 .toolbar {
-  padding: 18px 26px 0;
+  padding: var(--s-4) var(--s-5) 0;
   border-bottom: 1px solid var(--line);
   background: var(--bg);
 }
@@ -302,7 +300,7 @@ body {
 .toolbar-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--s-4);
 }
 
 .toolbar-row-title {
@@ -315,7 +313,7 @@ body {
 
 .toolbar-title {
   margin: 0;
-  font-size: 30px;
+  font-size: var(--t-title);
   font-weight: 800;
   letter-spacing: -0.015em;
   font-variation-settings: 'wdth' 90;
@@ -326,8 +324,8 @@ body {
 }
 
 .toolbar-subtitle {
-  margin-top: 3px;
-  font-size: 12.5px;
+  margin-top: var(--s-1);
+  font-size: var(--t-ui);
   color: var(--dim);
 }
 
@@ -335,7 +333,7 @@ body {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--s-2);
 }
 
 .toolbar-meta-toggle {
@@ -343,7 +341,7 @@ body {
 }
 
 .toolbar-row-controls {
-  margin-top: 14px;
+  margin-top: var(--s-3);
 }
 
 .toolbar-controls {
@@ -356,8 +354,8 @@ body {
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 0 16px 12px;
+  gap: var(--s-1);
+  padding: 0 var(--s-4) var(--s-3);
   border-right: 1px solid var(--line);
 }
 
@@ -372,7 +370,7 @@ body {
 .control-row {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--s-1);
   height: 24px;
 }
 
@@ -380,7 +378,7 @@ body {
   min-width: 34px;
   text-align: center;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--t-ui);
   font-weight: 500;
   color: var(--text);
   font-feature-settings: 'tnum' 1;
@@ -392,11 +390,11 @@ body {
 
 .control-readout-reset {
   border-radius: var(--radius-sm);
-  padding: 3px 4px;
+  padding: var(--s-1) var(--s-1);
   color: var(--dim);
   transition:
-    background var(--t-fast),
-    color var(--t-fast);
+    background var(--dur-fast),
+    color var(--dur-fast);
 }
 
 .control-readout-reset:hover {
@@ -406,16 +404,16 @@ body {
 
 .control-input {
   width: 54px;
-  padding: 3px 6px;
+  padding: var(--s-1) var(--s-2);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--t-ui);
   color: var(--text);
   text-align: center;
   background: var(--control-fill);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   font-feature-settings: 'tnum' 1;
-  transition: border-color var(--t-fast);
+  transition: border-color var(--dur-fast);
 }
 
 .control-input::-webkit-inner-spin-button {
@@ -428,11 +426,11 @@ body {
 }
 
 .control-a-small {
-  font-size: 9px;
+  font-size: var(--t-micro);
 }
 
 .control-a-large {
-  font-size: 14px;
+  font-size: var(--t-body);
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -442,7 +440,7 @@ body {
 .preview {
   min-width: 0;
   overflow-y: auto;
-  padding: 30px 34px 60px;
+  padding: var(--s-6) var(--s-6) var(--s-7);
 }
 
 .preview-page {
@@ -450,14 +448,14 @@ body {
 }
 
 .preview-section {
-  margin-bottom: 30px;
+  margin-bottom: var(--s-6);
 }
 
 .preview-section-head {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
 }
 
  /* The one eyebrow that is not a quiet label: which verse you are on is
@@ -468,8 +466,8 @@ body {
 }
 
 .preview-section-label {
-  font-size: 11.5px;
-  color: var(--faint);
+  font-size: var(--t-ui);
+  color: var(--dim);
   font-style: italic;
 }
 
@@ -487,7 +485,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  margin-bottom: calc(4px * var(--font-scale, 1));
+  margin-bottom: calc(var(--s-1) * var(--font-scale, 1));
 }
 
 .preview-line-blank {
@@ -503,35 +501,35 @@ body {
 .preview-cell-chord {
   height: calc(19px * var(--font-scale, 1));
   font-family: var(--font-mono);
-  font-size: calc(11.5px * var(--font-scale, 1));
+  font-size: calc(var(--t-ui) * var(--font-scale, 1));
   font-weight: 600;
   letter-spacing: 0.01em;
   color: var(--accent);
 }
 
 .preview-cell-lyric {
-  font-size: calc(17px * var(--font-scale, 1));
+  font-size: calc(var(--t-lead) * var(--font-scale, 1));
   line-height: 1.45;
   color: var(--text);
 }
 
 .preview-empty {
-  padding: 40px 0;
-  font-size: 13px;
-  color: var(--faint);
+  padding: var(--s-6) 0;
+  font-size: var(--t-body);
+  color: var(--dim);
 }
 
 /* ─── chord token + popover ─── */
 
 .chord-token {
-  padding: 1px 3px;
-  margin-left: -3px;
-  border-radius: 5px;
+  padding: var(--s-hair) var(--s-1);
+  margin-left: calc(-1 * var(--s-1));
+  border-radius: var(--radius-sm);
   font: inherit;
   color: inherit;
   transition:
-    background var(--t-fast),
-    color var(--t-fast);
+    background var(--dur-fast),
+    color var(--dur-fast);
 }
 
 .chord-token:hover {
@@ -541,7 +539,7 @@ body {
 .chord-popover {
   position: fixed;
   z-index: 80;
-  padding: 12px;
+  padding: var(--s-3);
   background: var(--surface-raised);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-md);
@@ -565,9 +563,9 @@ body {
   position: absolute;
   inset: 0;
   margin: 0;
-  padding: 24px 26px 60px;
+  padding: var(--s-5) var(--s-5) var(--s-7);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--t-ui);
   line-height: 1.7;
   white-space: pre-wrap;
   word-break: break-word;
@@ -604,7 +602,7 @@ body {
 }
 
 .hl-comment {
-  color: var(--faint);
+  color: var(--dim);
   font-style: italic;
 }
 
@@ -615,31 +613,31 @@ body {
 .meta {
   width: var(--meta-w);
   overflow-y: auto;
-  padding: 26px 22px 60px;
+  padding: var(--s-5) var(--s-5) var(--s-7);
   background: var(--panel);
   border-left: 1px solid var(--line);
 }
 
 .meta-section + .meta-section {
-  margin-top: 26px;
+  margin-top: var(--s-5);
 }
 
 .meta-section-title {
-  margin: 0 0 12px;
+  margin: 0 0 var(--s-3);
 }
 
 .meta-field {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
-  padding: 7px 0;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
   border-bottom: 1px solid var(--line);
 }
 
 .meta-field-label {
   flex: none;
-  font-size: 11.5px;
+  font-size: var(--t-ui);
   color: var(--dim);
 }
 
@@ -650,23 +648,23 @@ body {
 
 .meta-value {
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: var(--t-ui);
   color: var(--text);
   font-feature-settings: 'tnum' 1;
 }
 
 .meta-input {
   width: 100%;
-  padding: 3px 0;
-  font-size: 12.5px;
+  padding: var(--s-1) 0;
+  font-size: var(--t-ui);
   color: var(--text);
   text-align: right;
   border-bottom: 1px solid transparent;
-  transition: border-color var(--t-fast);
+  transition: border-color var(--dur-fast);
 }
 
 .meta-input::placeholder {
-  color: var(--faint);
+  color: var(--dim);
 }
 
 .meta-input:focus {
@@ -676,28 +674,30 @@ body {
 .meta-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--s-2);
 }
 
 .meta-tag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 6px 3px 10px;
-  font-size: 11px;
+  gap: var(--s-1);
+  padding: var(--s-1) var(--s-2) var(--s-1) var(--s-3);
+  font-size: var(--t-ui);
   color: var(--text);
   background: var(--accent-soft);
   border: 1px solid var(--accent-line);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .meta-tag-remove {
-  color: var(--dim);
-  font-size: 12px;
+  /* No colour of its own: --dim over the tag's amber tint measured 4.47:1,
+     just under AA, and the x is this chip's only control. It inherits the
+     tag's --text and separates itself by the hover instead. */
+  font-size: var(--t-ui);
   line-height: 1;
-  padding: 0 2px;
+  padding: 0 var(--s-hair);
   border-radius: 50%;
-  transition: color var(--t-fast);
+  transition: color var(--dur-fast);
 }
 
 .meta-tag-remove:hover {
@@ -705,18 +705,18 @@ body {
 }
 
 .meta-tag-add {
-  margin-top: 8px;
+  margin-top: var(--s-2);
 }
 
 .meta-tag-add input {
   width: 100%;
-  padding: 6px 12px;
-  font-size: 11.5px;
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--t-ui);
   text-align: left;
   color: var(--text);
   background: transparent;
   border: 1px dashed var(--line-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .meta-tag-add input:focus {
@@ -727,12 +727,12 @@ body {
 .meta-chord-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: 12px;
+  gap: var(--s-3);
 }
 
 .meta-empty {
-  font-size: 11.5px;
-  color: var(--faint);
+  font-size: var(--t-ui);
+  color: var(--dim);
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -743,20 +743,20 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: var(--s-1);
   color: var(--text);
 }
 
 .chord-diagram-sm {
-  font-size: 11px;
+  font-size: var(--t-ui);
 }
 
 .chord-diagram-md {
-  font-size: 13px;
+  font-size: var(--t-body);
 }
 
 .chord-diagram-lg {
-  font-size: 16px;
+  font-size: var(--t-lead);
 }
 
 .chord-diagram-name {
@@ -767,11 +767,11 @@ body {
 }
 
 .chord-diagram-missing {
-  color: var(--faint);
+  color: var(--dim);
 }
 
 .chord-diagram-hint {
-  font-size: 10px;
+  font-size: var(--t-micro);
   font-style: italic;
 }
 
@@ -812,7 +812,7 @@ body {
 
 .chord-diagram-finger {
   font-family: var(--font-mono);
-  font-size: 7px;
+  font-size: var(--t-glyph);
   font-weight: 700;
   fill: var(--diagram-dot-text);
 }
@@ -836,7 +836,7 @@ body {
 
 .chord-diagram-fretnum {
   font-family: var(--font-mono);
-  font-size: 8px;
+  font-size: var(--t-glyph);
   fill: var(--faint);
 }
 
@@ -847,8 +847,8 @@ body {
 .player {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 0 20px;
+  gap: var(--s-3);
+  padding: 0 var(--s-4);
   background: var(--footer-fill);
   border-top: 1px solid var(--line);
 }
@@ -858,7 +858,7 @@ body {
 }
 
 .player-helper-caret {
-  font-size: 9px;
+  font-size: var(--t-micro);
   opacity: 0.7;
 }
 
@@ -878,14 +878,14 @@ body {
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--s-3);
 }
 
 .player-time {
   flex: none;
   min-width: 38px;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--t-micro);
   color: var(--dim);
   font-feature-settings: 'tnum' 1;
 }
@@ -903,7 +903,7 @@ body {
 
 .player-tempo {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--t-ui);
   color: var(--dim);
   letter-spacing: 0.02em;
   font-feature-settings: 'tnum' 1;
@@ -929,14 +929,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 0 22px;
+  gap: var(--s-4);
+  padding: 0 var(--s-5);
   border-bottom: 1px solid var(--line);
   background: var(--panel-deep);
 }
 
 .perf-overlay-title {
-  font-size: 15px;
+  font-size: var(--t-body);
   font-weight: 700;
   letter-spacing: -0.01em;
   overflow: hidden;
@@ -948,13 +948,13 @@ body {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--s-3);
 }
 
 .perf-overlay-speed {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-2);
 }
 
 .perf-overlay-speed input {
@@ -974,7 +974,7 @@ body {
 
 .perf-overlay-scroll .preview {
   overflow: visible;
-  padding: 40px 46px;
+  padding: var(--s-6) var(--s-7);
 }
 
 .perf-overlay-scroll .preview-page {
@@ -985,12 +985,12 @@ body {
 /* On a stand, at a distance: everything grows, and the chord grows more
    than the lyric because it is what you glance at mid-bar. */
 .perf-overlay-scroll .preview-cell-lyric {
-  font-size: calc(23px * var(--font-scale, 1));
+  font-size: calc(var(--t-display) * var(--font-scale, 1));
 }
 
 .perf-overlay-scroll .preview-cell-chord {
   height: calc(24px * var(--font-scale, 1));
-  font-size: calc(15px * var(--font-scale, 1));
+  font-size: calc(var(--t-body) * var(--font-scale, 1));
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -1020,8 +1020,8 @@ body {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 16px 0 20px;
+  gap: var(--s-3);
+  padding: 0 var(--s-4) 0 var(--s-4);
   height: 42px;
   border-bottom: 1px solid var(--line);
 }
@@ -1029,13 +1029,13 @@ body {
 .gh-summary {
   display: flex;
   align-items: baseline;
-  gap: 7px;
-  font-size: 12.5px;
+  gap: var(--s-2);
+  font-size: var(--t-ui);
   color: var(--dim);
 }
 
 .gh-summary strong {
-  font-size: 14px;
+  font-size: var(--t-body);
   font-weight: 700;
   color: var(--accent);
 }
@@ -1045,19 +1045,21 @@ body {
 }
 
 .gh-summary-sep {
+  /* Incidental text: a separator between two words that the layout already
+     separates. It carries nothing to read, so it may sit below AA. */
   color: var(--faint);
 }
 
 .gh-summary-box {
-  font-size: 11px;
+  font-size: var(--t-ui);
   color: var(--dim);
 }
 
 .gh-tuning {
   margin-left: auto;
-  font-size: 10.5px;
+  font-size: var(--t-micro);
   letter-spacing: 0.22em;
-  color: var(--faint);
+  color: var(--dim);
 }
 
 .gh-close {
@@ -1072,8 +1074,8 @@ body {
   flex: none;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px 10px;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-2);
   border-right: 1px solid var(--line);
   background: var(--panel-deep);
 }
@@ -1083,19 +1085,19 @@ body {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-2);
   width: 118px;
-  padding: 8px 10px;
+  padding: var(--s-2) var(--s-2);
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   color: var(--dim);
-  font-size: 11.5px;
+  font-size: var(--t-ui);
   font-weight: 600;
   text-align: left;
   transition:
-    background var(--t-fast),
-    color var(--t-fast),
-    border-color var(--t-fast);
+    background var(--dur-fast),
+    color var(--dur-fast),
+    border-color var(--dur-fast);
 }
 
 .gh-rail-btn:hover {
@@ -1115,7 +1117,7 @@ body {
 
 .gh-rail-badge {
   position: absolute;
-  right: 8px;
+  right: var(--s-2);
   font-family: var(--font-mono);
 }
 
@@ -1123,7 +1125,7 @@ body {
 
 .gh-controls {
   flex: none;
-  padding: 10px 18px;
+  padding: var(--s-2) var(--s-4);
   border-bottom: 1px solid var(--line);
 }
 
@@ -1133,19 +1135,19 @@ body {
   display: flex;
   align-items: flex-end;
   flex-wrap: wrap;
-  gap: 10px 14px;
+  gap: var(--s-2) var(--s-3);
 }
 
 .gh-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--s-2);
 }
 
 .gh-chip-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--s-1);
 }
 
 .gh-divider {
@@ -1176,17 +1178,17 @@ body {
   flex-direction: column;
   align-items: center;
   min-width: 26px;
-  padding: 2px 6px;
+  padding: var(--s-hair) var(--s-2);
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--t-micro);
   color: var(--dim);
 }
 
 .tone .deg {
-  font-size: 8px;
-  color: var(--faint);
+  font-size: var(--t-glyph);
+  color: var(--dim);
 }
 
 .tone[data-role='root'] {
@@ -1238,7 +1240,7 @@ body {
 .guitar-helper-board {
   min-width: 0;
   min-height: 0;
-  padding: 10px 0 10px 12px;
+  padding: var(--s-2) 0 var(--s-2) var(--s-3);
 }
 
 .fretboard-host {
@@ -1257,7 +1259,7 @@ body {
   width: 232px;
   min-height: 0;
   overflow-y: auto;
-  padding: 12px 14px;
+  padding: var(--s-3) var(--s-3);
   border-left: 1px solid var(--line);
   background: var(--panel-deep);
 }
@@ -1271,25 +1273,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
 }
 
 .gh-chords-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: 12px;
+  gap: var(--s-3);
 }
 
 .gh-chords-empty {
-  font-size: 11.5px;
-  color: var(--faint);
+  font-size: var(--t-ui);
+  color: var(--dim);
 }
 
 .gh-empty-state {
   display: grid;
   place-items: center;
-  padding: 30px;
-  font-size: 12px;
-  color: var(--faint);
+  padding: var(--s-6);
+  font-size: var(--t-ui);
+  color: var(--dim);
 }

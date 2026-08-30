@@ -424,7 +424,7 @@ export function Fretboard({
               fontFamily="var(--font-mono)"
               fontSize="10.5"
               fontWeight={isMarked ? 600 : 400}
-              fill={isMarked ? 'var(--fb-number)' : 'var(--fb-number-faint)'}
+              fill="var(--fb-number)"
               style={{ fontFeatureSettings: '"tnum"' }}
             >
               {fret}
