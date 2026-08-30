@@ -5,11 +5,18 @@ import { transposeSong } from './lib/transpose'
 import { SAMPLE_SONGS } from './lib/samples'
 import Workspace from './components/Workspace'
 import Titlebar, { type Palette } from './components/Titlebar'
+import Toast from './components/Toast'
 
 interface LibraryState {
   songs: Song[]
   selectedId: string | null
 }
+
+/** What the last write to disk did. The sidebar footer says so in words.
+ *  'off' is the read-failed case: writing stays disabled for the session so
+ *  an unreadable library is not overwritten, and the footer has to keep
+ *  saying so — the toast that explained it is long gone by then. */
+export type SaveState = 'idle' | 'saving' | 'saved' | 'failed' | 'off'
 
 interface PrefState {
   palette: Palette
@@ -62,43 +69,95 @@ function makeInitialLibrary(): LibraryState {
 }
 
 export default function App() {
-  const [{ songs, selectedId }, setLibrary] = useState<LibraryState>(makeInitialLibrary)
+  const [{ songs, selectedId }, setLibrary] = useState<LibraryState>({ songs: [], selectedId: null })
   const [prefs, setPrefs] = useState<PrefState>(loadPrefs)
   const [transposeBySong, setTransposeBySong] = useState<Record<string, number>>({})
-  const hydratedRef = useRef(false)
+  const [hydrating, setHydrating] = useState(true)
+  const [saveState, setSaveState] = useState<SaveState>('idle')
+  const [toast, setToast] = useState<{ n: number; message: string } | null>(null)
+  const toastCount = useRef(0)
 
-  // Hydrate library from disk/localStorage
+  /*
+   * Writing is off until a read has succeeded. If the library on disk could
+   * not be parsed, the app must not then serialise its empty state over the
+   * top of it — a visible error that destroys the file it is reporting is
+   * worse than the silent failure it replaced.
+   */
+  const canSave = useRef(false)
+
+  const notify = useCallback((message: string) => {
+    toastCount.current += 1
+    setToast({ n: toastCount.current, message })
+  }, [])
+
+  // Hydrate the library from disk. Nothing renders as "yours" until this
+  // settles: the app used to show sample songs and then swap them out, so the
+  // first thing you saw was content that was not yours.
   useEffect(() => {
     let cancelled = false
-    bridge.loadLibrary().then((raw) => {
-      if (cancelled || !raw) return
-      try {
-        const parsed = JSON.parse(raw) as { sources: string[]; selectedId?: string | null }
-        if (Array.isArray(parsed.sources) && parsed.sources.length) {
+    bridge
+      .loadLibrary()
+      .then((raw) => {
+        if (cancelled) return
+        if (!raw) {
+          // Genuinely empty — a first run. Samples are a welcome, not a patch.
+          setLibrary(makeInitialLibrary())
+          canSave.current = true
+          return
+        }
+        try {
+          const parsed = JSON.parse(raw) as { sources: string[]; selectedId?: string | null }
+          if (!Array.isArray(parsed.sources)) throw new Error('no sources array')
           const songsFromDisk = parsed.sources.map((src, i) => parseChordPro(src, `restored-${i}`))
           setLibrary({
             songs: songsFromDisk,
             selectedId: parsed.selectedId ?? songsFromDisk[0]?.id ?? null,
           })
+          canSave.current = true
+        } catch {
+          setSaveState('off')
+          notify(
+            'Your library file could not be read, so nothing has been loaded. ' +
+              'Saving is off for this session so the file is not overwritten.',
+          )
         }
-      } catch {
-        /* corrupt — keep samples */
-      } finally {
-        hydratedRef.current = true
-      }
-    })
+      })
+      .catch(() => {
+        if (cancelled) return
+        setSaveState('off')
+        notify('Your library could not be opened. Saving is off for this session.')
+      })
+      .finally(() => {
+        if (!cancelled) setHydrating(false)
+      })
     return () => { cancelled = true }
-  }, [])
+  }, [notify])
 
-  // Persist library
+  // Persist the library.
   useEffect(() => {
-    if (!hydratedRef.current) return
+    if (hydrating || !canSave.current) return
     const payload = JSON.stringify({
       sources: songs.map((s) => serializeChordPro(s)),
       selectedId,
     })
-    bridge.saveLibrary(payload)
-  }, [songs, selectedId])
+    setSaveState('saving')
+    let cancelled = false
+    bridge
+      .saveLibrary(payload)
+      .then((ok) => {
+        if (cancelled) return
+        setSaveState(ok ? 'saved' : 'failed')
+        if (!ok) {
+          notify('Could not save to disk. Your changes are still here, but not written yet.')
+        }
+      })
+      .catch(() => {
+        if (cancelled) return
+        setSaveState('failed')
+        notify('Could not save to disk. Your changes are still here, but not written yet.')
+      })
+    return () => { cancelled = true }
+  }, [songs, selectedId, hydrating, notify])
 
   useEffect(() => savePrefs(prefs), [prefs])
 
@@ -192,6 +251,9 @@ export default function App() {
         onPaletteChange={(palette) => setPrefs((p) => ({ ...p, palette }))}
       />
       <Workspace
+        hydrating={hydrating}
+        saveState={saveState}
+        onError={notify}
         songs={songs}
         selectedSong={selectedSong}
         displaySong={displaySong}
@@ -211,6 +273,9 @@ export default function App() {
         metaOpen={prefs.metaOpen}
         onMetaOpenChange={(v) => setPrefs((p) => ({ ...p, metaOpen: v }))}
       />
+      {toast && (
+        <Toast key={toast.n} message={toast.message} onDismiss={() => setToast(null)} />
+      )}
     </div>
   )
 }

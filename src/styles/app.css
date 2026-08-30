@@ -340,11 +340,25 @@ body {
 
 .sidebar-foot {
   flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
   padding: var(--s-2) var(--s-4);
   border-top: 1px solid var(--line);
   font-size: var(--t-micro);
   color: var(--dim);
   letter-spacing: 0.04em;
+}
+
+.sidebar-save {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.sidebar-loading {
+  padding: var(--s-4) var(--s-2);
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -1243,4 +1257,28 @@ body {
 .fretboard-svg {
   display: block;
   user-select: none;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TOAST — the kit ships the surface, the app arranges it
+   ════════════════════════════════════════════════════════════════ */
+
+/*
+ * .toast itself is the kit's: fixed, centred, danger-surface, its own
+ * entrance. All that is added here is the row inside it, because the kit's
+ * class is a surface and has no opinion about what you put on it.
+ */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.toast-message {
+  min-width: 0;
+}
+
+.toast-dismiss {
+  flex: none;
+  color: inherit;
 }

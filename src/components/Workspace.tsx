@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from '@singz/ui'
 import type { Song } from '../lib/chordpro'
+import type { SaveState } from '../App'
 import { serializeChordPro } from '../lib/chordpro'
 import Sidebar from './Sidebar'
 import Toolbar from './Toolbar'
@@ -15,6 +16,9 @@ import { rootToPitchClass, type PitchClass } from '../lib/scales'
 export type Mode = 'preview' | 'edit' | 'split'
 
 export interface WorkspaceProps {
+  hydrating: boolean
+  saveState: SaveState
+  onError: (message: string) => void
   songs: Song[]
   selectedSong: Song | null
   displaySong: Song | null
@@ -72,9 +76,20 @@ export default function Workspace(props: WorkspaceProps) {
         onSelect={props.onSelectSong}
         onNew={props.onNewSong}
         onDelete={props.onDeleteSong}
+        hydrating={props.hydrating}
+        saveState={props.saveState}
       />
       <main className="workspace-main">
-        {displaySong ? (
+        {props.hydrating ? (
+          <div className="workspace-empty">
+            <div className="workspace-empty-inner">
+              {/* A line, not a spinner: a local read settles in about 20ms and
+                  a spinner for that is theatre. It is here so the app never
+                  shows a song that is not yours while it waits. */}
+              <div className="eyebrow">Loading library…</div>
+            </div>
+          </div>
+        ) : displaySong ? (
           <>
             <Toolbar
               song={displaySong}
@@ -124,6 +139,7 @@ export default function Workspace(props: WorkspaceProps) {
               song={displaySong}
               showHelper={props.showHelper}
               onShowHelperChange={props.onShowHelperChange}
+              onError={props.onError}
             />
             {performance && (
               <PerformanceOverlay

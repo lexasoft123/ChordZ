@@ -1,6 +1,31 @@
 import { useMemo, useState } from 'react'
-import { Badge, Button, Modal, ModalActions } from '@singz/ui'
+import { Badge, Button, Modal, ModalActions, StatusDot } from '@singz/ui'
 import type { Song } from '../lib/chordpro'
+import type { SaveState } from '../App'
+
+const SAVE_TONE = {
+  idle: 'idle',
+  saving: 'idle',
+  saved: 'ok',
+  failed: 'warn',
+  off: 'warn',
+} as const
+
+const SAVE_WORD = {
+  idle: '',
+  saving: 'Saving…',
+  saved: 'Saved',
+  failed: 'Not saved',
+  off: 'Not saving',
+} as const
+
+const SAVE_TITLE = {
+  idle: '',
+  saving: 'Writing your library to disk',
+  saved: 'Your library is written to disk',
+  failed: 'The last write did not go through',
+  off: 'Your library file could not be read, so nothing is being written to it',
+} as const
 
 interface Props {
   songs: Song[]
@@ -8,9 +33,19 @@ interface Props {
   onSelect: (id: string) => void
   onNew: () => void
   onDelete: (id: string) => void
+  hydrating: boolean
+  saveState: SaveState
 }
 
-export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete }: Props) {
+export default function Sidebar({
+  songs,
+  selectedId,
+  onSelect,
+  onNew,
+  onDelete,
+  hydrating,
+  saveState,
+}: Props) {
   const [query, setQuery] = useState('')
   const [pendingDelete, setPendingDelete] = useState<Song | null>(null)
 
@@ -48,7 +83,10 @@ export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete }
         />
       </div>
       <nav className="sidebar-list">
-        {grouped.length === 0 && <div className="sidebar-empty">no matches</div>}
+        {hydrating && <div className="eyebrow sidebar-loading">Loading library…</div>}
+        {!hydrating && grouped.length === 0 && (
+          <div className="sidebar-empty">{songs.length === 0 ? 'no songs yet' : 'no matches'}</div>
+        )}
         {grouped.map(([tag, list]) => (
           <div className="sidebar-group" key={tag}>
             <div className="eyebrow sidebar-group-label">{tag}</div>
@@ -123,8 +161,22 @@ export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete }
           </div>
         ))}
       </nav>
+      {/*
+        The dot alone is not accessible — the kit's own note says so — so it is
+        paired with the word. This is the only place the app says a write
+        happened; saving is continuous, and a banner for every keystroke would
+        be noise.
+      */}
       <div className="sidebar-foot">
-        {songs.length} song{songs.length === 1 ? '' : 's'}
+        <span>
+          {songs.length} song{songs.length === 1 ? '' : 's'}
+        </span>
+        {!hydrating && saveState !== 'idle' && (
+          <span className="sidebar-save" title={SAVE_TITLE[saveState]}>
+            <StatusDot tone={SAVE_TONE[saveState]} />
+            {SAVE_WORD[saveState]}
+          </span>
+        )}
       </div>
 
       {pendingDelete && (

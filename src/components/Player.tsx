@@ -12,6 +12,7 @@ interface PlayerProps {
   song: Song
   showHelper: boolean
   onShowHelperChange: (v: boolean) => void
+  onError: (message: string) => void
 }
 
 type PlayerMode = 'backing' | 'file'
@@ -21,7 +22,7 @@ const MODES: { value: PlayerMode; label: string }[] = [
   { value: 'file', label: 'File' },
 ]
 
-export default function Player({ song, showHelper, onShowHelperChange }: PlayerProps) {
+export default function Player({ song, showHelper, onShowHelperChange, onError }: PlayerProps) {
   const [src, setSrc] = useState<string | null>(null)
   const [mode, setMode] = useState<PlayerMode>('backing')
   const [playing, setPlaying] = useState(false)
@@ -35,12 +36,17 @@ export default function Player({ song, showHelper, onShowHelperChange }: PlayerP
   }, [])
 
   const onLoadFile = async () => {
-    const url = await bridge.openAudioFile()
-    if (url) {
-      setSrc(url)
-      setMode('file')
-      setTimeout(() => audio.current?.play().catch(() => {}), 50)
+    let url: string | null = null
+    try {
+      url = await bridge.openAudioFile()
+    } catch {
+      onError('Could not open that file.')
+      return
     }
+    if (!url) return // the picker was cancelled — not a failure
+    setSrc(url)
+    setMode('file')
+    setTimeout(() => audio.current?.play().catch(() => {}), 50)
   }
 
   const togglePlay = () => {
@@ -169,6 +175,20 @@ export default function Player({ song, showHelper, onShowHelperChange }: PlayerP
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
+        onError={(e) => {
+          // Guarded on the element's own MediaError rather than on our `src`
+          // state: ejecting a file clears the attribute, and the resulting
+          // load-abort is not something to report. Only a real decode or
+          // network failure sets .error.
+          if (!e.currentTarget.error) return
+          // Without this the bar kept the file loaded and offered a play
+          // button that silently did nothing.
+          setSrc(null)
+          setPlaying(false)
+          setDuration(0)
+          setProgress(0)
+          onError('Could not decode that audio file.')
+        }}
       />
     </footer>
   )
