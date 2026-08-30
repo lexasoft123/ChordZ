@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { STEM_META, CUSTOM_COLORS } from '@singz/ui/stems'
 import {
   boxFretWindow,
   hasOpenPosition,
@@ -44,14 +45,20 @@ const DOUBLE_INLAYS = new Set([12, 24])
  * Box outlines. The hues are the kit's stem palette — the same six a SingZ
  * mixer lane can wear — so the two apps share one colour vocabulary, and no
  * two adjacent boxes read as shades of each other.
+ *
+ * Read from the kit rather than transcribed from it. All six were hand-copied
+ * hex, and stems.ts opens by describing what that costs: the phone's vocals
+ * had drifted to #ff5d66 against the desktop's #ff5c65, one digit in two
+ * channels, from the same mock. This file was one careless edit from being
+ * the third copy.
  */
 const BOX_COLORS: Record<BoxId, string> = {
-  0: '#27e7bb',
-  1: '#ffc53d',
-  2: '#527dff',
-  3: '#c7e06a',
-  4: '#da81da',
-  5: '#ff5c65',
+  0: STEM_META.other.color,
+  1: STEM_META.drums.color,
+  2: STEM_META.bass.color,
+  3: CUSTOM_COLORS[0],
+  4: STEM_META.piano.color,
+  5: STEM_META.vocals.color,
 }
 
 function useIsMobile(breakpoint = 640) {

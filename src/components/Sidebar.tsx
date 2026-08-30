@@ -79,6 +79,9 @@ export default function Sidebar({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search"
+          // A placeholder is not a label: it is gone the moment you type, and
+          // it is the field's name only by the browser's fallback.
+          aria-label="Search the library"
           spellCheck={false}
         />
       </div>

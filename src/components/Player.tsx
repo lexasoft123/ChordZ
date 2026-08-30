@@ -29,11 +29,17 @@ export default function Player({ song, showHelper, onShowHelperChange, onError }
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const audio = useRef<HTMLAudioElement>(null)
-  const tickStop = useRef<(() => void) | null>(null)
 
+  /*
+   * The click track is owned here, not by the play button, so it follows the
+   * tempo the bar is printing. It used to be captured once at play time:
+   * editing BPM mid-song changed the number on screen and not the sound.
+   */
   useEffect(() => {
-    return () => { tickStop.current?.() }
-  }, [])
+    if (mode !== 'backing' || !playing) return
+    const stop = startBackingClick(song.meta.tempo ?? 90)
+    return stop
+  }, [mode, playing, song.meta.tempo])
 
   const onLoadFile = async () => {
     let url: string | null = null
@@ -56,14 +62,8 @@ export default function Player({ song, showHelper, onShowHelperChange, onError }
       if (a.paused) { a.play(); setPlaying(true) }
       else { a.pause(); setPlaying(false) }
     } else {
-      if (playing) {
-        tickStop.current?.()
-        tickStop.current = null
-        setPlaying(false)
-      } else {
-        tickStop.current = startBackingClick(song.meta.tempo ?? 90)
-        setPlaying(true)
-      }
+      // The effect above starts and stops the click; this only says which.
+      setPlaying((p) => !p)
     }
   }
 
@@ -94,8 +94,6 @@ export default function Player({ song, showHelper, onShowHelperChange, onError }
         value={mode}
         onChange={(m) => {
           setMode(m)
-          tickStop.current?.()
-          tickStop.current = null
           setPlaying(false)
         }}
         aria-label="Playback source"

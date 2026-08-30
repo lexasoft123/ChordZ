@@ -1219,12 +1219,12 @@ body {
 }
 
 .tone[data-role='blues'] {
-  border-color: rgba(218, 129, 218, 0.4);
-  color: #da81da;
+  border-color: var(--tone-blues-line);
+  color: var(--tone-blues);
 }
 
 .tone[data-role='blues'] .deg {
-  color: #da81da;
+  color: var(--tone-blues);
   opacity: 0.75;
 }
 

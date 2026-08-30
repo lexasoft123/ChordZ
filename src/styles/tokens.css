@@ -109,6 +109,14 @@
   --diagram-barre: var(--accent);
   --diagram-strokew: 1px;
 
+  /* ─── scale tones ───
+     The blues note is the one degree that is not the accent, so it needs a
+     colour of its own. It was a literal violet in app.css, which meant it
+     stayed a night colour when the light palette arrived: 6.85:1 on a dark
+     panel, 2.08:1 on a pale one. */
+  --tone-blues: #da81da;
+  --tone-blues-line: color-mix(in srgb, var(--tone-blues) 40%, transparent);
+
   /* ─── fretboard ───
      Hues chosen to sit beside the kit's stem palette rather than beside
      each other: a box outline must never read as another box's. */
@@ -135,6 +143,9 @@
   /* Thin dark lines wash out on paper the way thin light ones do not. */
   --diagram-string: color-mix(in srgb, var(--text) 60%, transparent);
   --diagram-fret: color-mix(in srgb, var(--text) 40%, transparent);
+
+  /* Violet at 68% lightness is 2.08:1 on paper. Same hue, darker, 6.14:1. */
+  --tone-blues: #8a288a;
 
   /* A rosewood board still reads as rosewood on a light page — it is an
      instrument sitting on the paper, not a panel of the UI. */

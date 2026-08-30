@@ -16,7 +16,7 @@ body,
 
 body {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--t-body);
   overflow: hidden;
   user-select: none;
   -webkit-font-smoothing: antialiased;
