@@ -291,91 +291,82 @@ body {
    TOOLBAR
    ════════════════════════════════════════════════════════════════ */
 
+/*
+ * One row, 56px. It was two rows and 137px: a title row, and under it a strip
+ * of seven bordered control groups holding the song's key, tempo, capo,
+ * spelling, text size and a second guitar-helper toggle. Six of those were
+ * either the song's own properties — which the details panel edits — or
+ * duplicated somewhere else on the same screen. What is left is the reading
+ * controls.
+ */
 .toolbar {
-  padding: var(--s-4) var(--s-5) 0;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  height: 56px;
+  padding: 0 var(--s-5);
   border-bottom: 1px solid var(--line);
   background: var(--bg);
 }
 
-.toolbar-row {
-  display: flex;
-  align-items: center;
-  gap: var(--s-4);
-}
-
-.toolbar-row-title {
-  justify-content: space-between;
-}
-
 .toolbar-titleblock {
   min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
 }
 
 .toolbar-title {
   margin: 0;
-  font-size: var(--t-title);
+  font-size: var(--t-display);
   font-weight: 800;
   letter-spacing: -0.015em;
   font-variation-settings: 'wdth' 90;
-  line-height: 1.1;
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.toolbar-subtitle {
-  margin-top: var(--s-1);
+/*
+ * The song's facts, read-only: artist, key, tempo, capo. The panel that edits
+ * them can stay shut without the key going with it.
+ */
+.toolbar-facts {
+  flex: none;
   font-size: var(--t-ui);
   color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .toolbar-actions {
   flex: none;
   display: flex;
   align-items: center;
-  gap: var(--s-2);
+  gap: var(--s-3);
+}
+
+/* An inline label instead of one stacked above: a 56px bar has one line. */
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.toolbar-group .eyebrow {
+  margin-right: var(--s-1);
 }
 
 .toolbar-meta-toggle {
   color: var(--dim);
 }
 
-.toolbar-row-controls {
-  margin-top: var(--s-3);
-}
-
-.toolbar-controls {
-  display: flex;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 0;
-}
-
-.control-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-1);
-  padding: 0 var(--s-4) var(--s-3);
-  border-right: 1px solid var(--line);
-}
-
-.control-group:first-child {
-  padding-left: 0;
-}
-
-.control-group:last-child {
-  border-right: none;
-}
-
-.control-row {
-  display: flex;
-  align-items: center;
-  gap: var(--s-1);
-  height: 24px;
-}
-
 .control-readout {
-  min-width: 34px;
+  min-width: 26px;
   text-align: center;
   font-family: var(--font-mono);
   font-size: var(--t-ui);
@@ -386,43 +377,6 @@ body {
 
 .control-readout-num {
   letter-spacing: 0.02em;
-}
-
-.control-readout-reset {
-  border-radius: var(--radius-sm);
-  padding: var(--s-1) var(--s-1);
-  color: var(--dim);
-  transition:
-    background var(--dur-fast),
-    color var(--dur-fast);
-}
-
-.control-readout-reset:hover {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.control-input {
-  width: 54px;
-  padding: var(--s-1) var(--s-2);
-  font-family: var(--font-mono);
-  font-size: var(--t-ui);
-  color: var(--text);
-  text-align: center;
-  background: var(--control-fill);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  font-feature-settings: 'tnum' 1;
-  transition: border-color var(--dur-fast);
-}
-
-.control-input::-webkit-inner-spin-button {
-  display: none;
-}
-
-.control-input:hover,
-.control-input:focus {
-  border-color: var(--accent-line);
 }
 
 .control-a-small {
@@ -669,6 +623,54 @@ body {
 
 .meta-input:focus {
   border-bottom-color: var(--accent-line);
+}
+
+/*
+ * A field whose value is a control rather than a readout — the capo stepper,
+ * the tempo input, the text-size trio. Baseline-aligned rows would leave the
+ * chips floating, so this centres them and keeps the row on the right.
+ */
+.meta-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-1);
+}
+
+.meta-input-num {
+  width: 44px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' 1;
+}
+
+.meta-input-num::-webkit-inner-spin-button {
+  display: none;
+}
+
+.meta-unit {
+  flex: none;
+  font-size: var(--t-ui);
+  color: var(--dim);
+}
+
+.meta-value-num {
+  min-width: 48px;
+  text-align: center;
+}
+
+.meta-value-reset {
+  border-radius: var(--radius-sm);
+  padding: var(--s-1);
+  color: var(--dim);
+  transition:
+    background var(--dur-fast),
+    color var(--dur-fast);
+}
+
+.meta-value-reset:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .meta-tags {
@@ -1009,13 +1011,6 @@ body {
   animation: rise 0.22s var(--ease-out);
 }
 
-/* With the fretboard hidden the controls row is not rendered either, so
-   the panel only has to be tall enough for the chord palette. */
-.guitar-helper:has(.guitar-helper-body[data-fretboard='0']) {
-  height: auto;
-  max-height: 320px;
-}
-
 .guitar-helper-head {
   flex: none;
   display: flex;
@@ -1066,59 +1061,6 @@ body {
   flex: none;
   width: 26px;
   height: 26px;
-}
-
-/* ─── left tool rail ─── */
-
-.gh-rail {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-  padding: var(--s-3) var(--s-2);
-  border-right: 1px solid var(--line);
-  background: var(--panel-deep);
-}
-
-.gh-rail-btn {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: var(--s-2);
-  width: 118px;
-  padding: var(--s-2) var(--s-2);
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
-  color: var(--dim);
-  font-size: var(--t-ui);
-  font-weight: 600;
-  text-align: left;
-  transition:
-    background var(--dur-fast),
-    color var(--dur-fast),
-    border-color var(--dur-fast);
-}
-
-.gh-rail-btn:hover {
-  background: var(--panel);
-  color: var(--text);
-}
-
-.gh-rail-btn[data-active='1'] {
-  background: var(--accent-soft);
-  border-color: var(--accent-line);
-  color: var(--accent);
-}
-
-.gh-rail-label {
-  min-width: 0;
-}
-
-.gh-rail-badge {
-  position: absolute;
-  right: var(--s-2);
-  font-family: var(--font-mono);
 }
 
 /* ─── controls row ─── */
@@ -1216,28 +1158,16 @@ body {
   font-family: var(--font-mono);
 }
 
-/* ─── body: rail | fretboard | chord drawer ─── */
-
+/* One column: the board. The rail and the chord drawer that flanked it are
+   gone — the drawer duplicated the details panel's chord grid. */
 .guitar-helper-body {
   flex: 1;
   min-height: 0;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-}
-
-.guitar-helper-body[data-fretboard='0'][data-chords='1'] {
-  grid-template-columns: auto 1fr;
-}
-
-.guitar-helper-body[data-fretboard='1'][data-chords='0'] {
-  grid-template-columns: auto 1fr;
-}
-
-.guitar-helper-body[data-fretboard='0'][data-chords='0'] {
-  grid-template-columns: auto 1fr;
+  display: flex;
 }
 
 .guitar-helper-board {
+  flex: 1;
   min-width: 0;
   min-height: 0;
   padding: var(--s-2) 0 var(--s-2) var(--s-3);
@@ -1253,45 +1183,4 @@ body {
 .fretboard-svg {
   display: block;
   user-select: none;
-}
-
-.guitar-helper-chords {
-  width: 232px;
-  min-height: 0;
-  overflow-y: auto;
-  padding: var(--s-3) var(--s-3);
-  border-left: 1px solid var(--line);
-  background: var(--panel-deep);
-}
-
-.guitar-helper-body[data-fretboard='0'] .guitar-helper-chords {
-  width: auto;
-  border-left: none;
-}
-
-.gh-chords-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-2);
-  margin-bottom: var(--s-2);
-}
-
-.gh-chords-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: var(--s-3);
-}
-
-.gh-chords-empty {
-  font-size: var(--t-ui);
-  color: var(--dim);
-}
-
-.gh-empty-state {
-  display: grid;
-  place-items: center;
-  padding: var(--s-6);
-  font-size: var(--t-ui);
-  color: var(--dim);
 }

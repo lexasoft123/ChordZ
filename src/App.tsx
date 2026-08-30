@@ -16,6 +16,7 @@ interface PrefState {
   preferFlats: boolean
   fontScale: number
   showHelper: boolean
+  metaOpen: boolean
 }
 
 const PREFS_KEY = 'chordz:prefs:v2'
@@ -38,9 +39,16 @@ function loadPrefs(): PrefState {
       preferFlats: !!p.preferFlats,
       fontScale: clampScale(typeof p.fontScale === 'number' ? p.fontScale : 1),
       showHelper: !!p.showHelper,
+      metaOpen: !!p.metaOpen,
     }
   } catch {
-    return { palette: 'night', preferFlats: false, fontScale: 1, showHelper: false }
+    return {
+      palette: 'night',
+      preferFlats: false,
+      fontScale: 1,
+      showHelper: false,
+      metaOpen: false,
+    }
   }
 }
 
@@ -200,6 +208,8 @@ export default function App() {
         onFontScaleChange={(n) => setPrefs((p) => ({ ...p, fontScale: clampScale(n) }))}
         showHelper={prefs.showHelper}
         onShowHelperChange={(v) => setPrefs((p) => ({ ...p, showHelper: v }))}
+        metaOpen={prefs.metaOpen}
+        onMetaOpenChange={(v) => setPrefs((p) => ({ ...p, metaOpen: v }))}
       />
     </div>
   )

@@ -31,6 +31,8 @@ export interface WorkspaceProps {
   onFontScaleChange: (n: number) => void
   showHelper: boolean
   onShowHelperChange: (v: boolean) => void
+  metaOpen: boolean
+  onMetaOpenChange: (v: boolean) => void
 }
 
 function songRootPc(song: { meta: { key?: string } } | null): PitchClass | undefined {
@@ -50,9 +52,14 @@ export default function Workspace(props: WorkspaceProps) {
   const [mode, setMode] = useState<Mode>('preview')
   const [performance, setPerformance] = useState(false)
   const [scrollSpeed, setScrollSpeed] = useState(20) // px/sec
-  const [metaOpen, setMetaOpen] = useState(true)
 
   const { selectedSong, displaySong } = props
+
+  // Every field the details panel edits goes back the same way.
+  const patchMeta = (patch: Partial<Song['meta']>) => {
+    if (!selectedSong) return
+    props.onUpdateSong({ ...selectedSong, meta: { ...selectedSong.meta, ...patch } })
+  }
 
   return (
     <div
@@ -77,27 +84,9 @@ export default function Workspace(props: WorkspaceProps) {
               onTransposeChange={props.onTransposeChange}
               preferFlats={props.preferFlats}
               onPreferFlatsChange={props.onPreferFlatsChange}
-              metaOpen={metaOpen}
-              onMetaToggle={() => setMetaOpen((v) => !v)}
+              metaOpen={props.metaOpen}
+              onMetaToggle={() => props.onMetaOpenChange(!props.metaOpen)}
               onPerform={() => setPerformance(true)}
-              onCapoChange={(capo) => {
-                if (!selectedSong) return
-                props.onUpdateSong({
-                  ...selectedSong,
-                  meta: { ...selectedSong.meta, capo },
-                })
-              }}
-              onTempoChange={(tempo) => {
-                if (!selectedSong) return
-                props.onUpdateSong({
-                  ...selectedSong,
-                  meta: { ...selectedSong.meta, tempo },
-                })
-              }}
-              fontScale={props.fontScale}
-              onFontScaleChange={props.onFontScaleChange}
-              showHelper={props.showHelper}
-              onShowHelperChange={props.onShowHelperChange}
             />
             <div className={`workspace-body mode-${mode}`}>
               {(mode === 'preview' || mode === 'split') && <Preview song={displaySong} />}
@@ -107,30 +96,21 @@ export default function Workspace(props: WorkspaceProps) {
                   onChange={(src) => props.onUpdateSongSource(selectedSong.id, src)}
                 />
               )}
-              {metaOpen && (
+              {props.metaOpen && (
                 <MetadataPanel
                   song={displaySong}
-                  onTagsChange={(tags) => {
-                    if (!selectedSong) return
-                    props.onUpdateSong({
-                      ...selectedSong,
-                      meta: { ...selectedSong.meta, tags },
-                    })
-                  }}
-                  onArtistChange={(artist) => {
-                    if (!selectedSong) return
-                    props.onUpdateSong({
-                      ...selectedSong,
-                      meta: { ...selectedSong.meta, artist },
-                    })
-                  }}
+                  onTagsChange={(tags) => patchMeta({ tags })}
+                  onArtistChange={(artist) => patchMeta({ artist })}
+                  onTempoChange={(tempo) => patchMeta({ tempo })}
+                  onCapoChange={(capo) => patchMeta({ capo })}
+                  fontScale={props.fontScale}
+                  onFontScaleChange={props.onFontScaleChange}
                 />
               )}
             </div>
             {props.showHelper && (
               <GuitarHelper
                 key={selectedSong?.id ?? 'no-song'}
-                song={displaySong}
                 initialRoot={songRootPc(displaySong)}
                 initialScale={
                   displaySong?.meta.key && /m\b|minor/i.test(displaySong.meta.key)
