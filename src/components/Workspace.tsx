@@ -126,6 +126,7 @@ export default function Workspace(props: WorkspaceProps) {
             {props.showHelper && (
               <GuitarHelper
                 key={selectedSong?.id ?? 'no-song'}
+                song={displaySong}
                 initialRoot={songRootPc(displaySong)}
                 initialScale={
                   displaySong?.meta.key && /m\b|minor/i.test(displaySong.meta.key)

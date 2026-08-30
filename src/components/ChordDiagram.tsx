@@ -48,10 +48,30 @@ function Diagram({ shape }: { shape: ChordShape }) {
   const stringX = (i: number) => padX + i * stringStep
   const fretY = (i: number) => padTop + i * fretStep
 
-  // Display strings high-to-low (right-to-left in chord notation = left-to-right
-  // visually). Our `frets` array is low-E to high-e, so reverse for drawing.
-  const drawFrets = [...shape.frets].reverse()
-  const drawFingers = [...shape.fingers].reverse()
+  /*
+   * Low E on the LEFT. A chord chart is drawn as if the guitar is held up
+   * facing you with the neck vertical, so the thickest string is leftmost —
+   * which is also the order `frets` is stored in, low-E to high-e.
+   *
+   * This used to reverse the array, on a comment claiming chord notation runs
+   * right-to-left. It does not: x02210 is Am read from the low E. Reversing
+   * it drew every diagram in the app mirrored, so Am's three fingers sat on
+   * the wrong strings and the muted low E showed up under the high e.
+   */
+  const drawFrets = shape.frets
+  const drawFingers = shape.fingers
+
+  /*
+   * `frets` are ABSOLUTE fret numbers; the grid shows five frets starting at
+   * `baseFret`. So a fret has to be brought into the window before it can be
+   * drawn — Bm is x24432 at baseFret 2, and its 2s belong on the top row, not
+   * the second. Without this every barre chord sat one fret too low, by
+   * `baseFret - 1`, which is also why none of them drew a barre: `barre` is
+   * relative to the window and was being compared against absolute numbers,
+   * so it matched nothing. Open chords are baseFret 1, where rel === f, which
+   * is why they always looked right.
+   */
+  const rel = (f: number) => f - (shape.baseFret - 1)
 
   return (
     <svg
@@ -145,7 +165,7 @@ function Diagram({ shape }: { shape: ChordShape }) {
         // find leftmost / rightmost strings that play this fret
         const playing: number[] = []
         drawFrets.forEach((f, i) => {
-          if (f === barreFret) playing.push(i)
+          if (f !== null && f !== 0 && rel(f) === barreFret) playing.push(i)
         })
         if (playing.length < 2) return null
         const fromI = Math.min(...playing)
@@ -167,7 +187,7 @@ function Diagram({ shape }: { shape: ChordShape }) {
         if (f === null || f === 0) return null
         const finger = drawFingers[i]
         const cx = stringX(i)
-        const cy = fretY(f - 1) + fretStep / 2
+        const cy = fretY(rel(f) - 1) + fretStep / 2
         return (
           <g key={`dot-${i}`}>
             <circle cx={cx} cy={cy} r={6.5} className="chord-diagram-dot" />

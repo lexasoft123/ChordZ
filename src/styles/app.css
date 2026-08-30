@@ -1232,16 +1232,48 @@ body {
   font-family: var(--font-mono);
 }
 
-/* One column: the board. The rail and the chord drawer that flanked it are
-   gone — the drawer duplicated the details panel's chord grid. */
+/* Two columns: the board, and the shapes for this song beside it. The left
+   rail that used to flank them is gone — it existed only to hide the two
+   halves of a helper you had just chosen to open. */
 .guitar-helper-body {
   flex: 1;
   min-height: 0;
   display: flex;
 }
 
+.guitar-helper-chords {
+  flex: none;
+  order: 2;
+  width: 232px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--s-3);
+  border-left: 1px solid var(--line);
+  background: var(--panel-deep);
+}
+
+.gh-chords-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
+}
+
+.gh-chords-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: var(--s-3);
+}
+
+.gh-chords-empty {
+  font-size: var(--t-ui);
+  color: var(--dim);
+}
+
 .guitar-helper-board {
   flex: 1;
+  order: 1;
   min-width: 0;
   min-height: 0;
   padding: var(--s-2) 0 var(--s-2) var(--s-3);

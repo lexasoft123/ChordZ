@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { Badge } from '@singz/ui'
 import { Fretboard } from './Fretboard'
 import { FretboardControls } from './FretboardControls'
+import ChordDiagram from './ChordDiagram'
+import { collectChords, type Song } from '../lib/chordpro'
 import {
   noteName,
   preferredAccidental,
@@ -12,12 +15,14 @@ import {
 } from '../lib/scales'
 
 type Props = {
+  song?: Song | null
   initialRoot?: PitchClass
   initialScale?: ScaleTypeId
   onClose?: () => void
 }
 
 export default function GuitarHelper({
+  song,
   initialRoot,
   initialScale = 'major',
   onClose,
@@ -37,6 +42,7 @@ export default function GuitarHelper({
   const acc = preferredAccidental(rootPc)
   const rootName = noteName(rootPc, acc)
   const scaleShort = SCALES[scaleType].shortName
+  const chords = useMemo(() => (song ? collectChords(song) : []), [song])
 
   return (
     <section className="guitar-helper" aria-label="Guitar scale helper">
@@ -85,12 +91,11 @@ export default function GuitarHelper({
       />
 
       {/*
-        No rail, and no chord palette.
-
-        The rail toggled two panels, one of which — the chord palette — was the
-        same "chords in this song" grid the details panel already draws. Three
-        clicks to hide half of a helper you opened on purpose is furniture, so
-        the helper is now the one thing it is for: the controls and the board.
+        The rail is gone — it existed to hide the two halves of a helper you
+        had just chosen to open — but the chord shapes are not. This is the
+        guitar surface: someone who opens it wants the board AND the shapes,
+        and the details panel is shut by default, so removing these left a
+        guitarist with nowhere to see a fingering.
       */}
       <div className="guitar-helper-body">
         <div className="guitar-helper-board">
@@ -102,6 +107,20 @@ export default function GuitarHelper({
             labelMode={labelMode}
           />
         </div>
+
+        <aside className="guitar-helper-chords" aria-label="Chords in this song">
+          <div className="gh-chords-head">
+            <span className="eyebrow">Chords</span>
+            <Badge className="mono">{chords.length}</Badge>
+          </div>
+          <div className="gh-chords-grid">
+            {chords.length === 0 ? (
+              <div className="gh-chords-empty">no chords yet</div>
+            ) : (
+              chords.map((c) => <ChordDiagram key={c} chord={c} size="sm" />)
+            )}
+          </div>
+        </aside>
       </div>
     </section>
   )
