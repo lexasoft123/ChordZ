@@ -42,6 +42,7 @@
   --accent-ink: var(--sz-accent-ink);
   --accent-line: var(--sz-accent-line);
   --danger: var(--sz-danger);
+  --danger-wash: var(--sz-danger-strong-wash);
 
   /* ─── type ───
      The kit declares --sz-font-* but ships no faces, so the app assigns

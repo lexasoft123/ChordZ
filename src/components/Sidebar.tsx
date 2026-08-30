@@ -58,23 +58,65 @@ export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete }
                   key={s.id}
                   className="sidebar-item"
                   data-active={s.id === selectedId ? '1' : '0'}
-                  onClick={() => onSelect(s.id)}
-                  onContextMenu={(e) => {
-                    e.preventDefault()
-                    setPendingDelete(s)
-                  }}
                 >
-                  <span className="sidebar-item-title">{s.meta.title}</span>
-                  <span className="sidebar-item-meta">
-                    {/* caps={false} because "Am" set as "AM" is a different
-                        chord — A minor becomes A major. */}
-                    {s.meta.key && (
-                      <Badge caps={false} className="sidebar-item-key">
-                        {s.meta.key}
-                      </Badge>
-                    )}
-                    {s.meta.tempo && <span className="sidebar-item-bpm">{s.meta.tempo}</span>}
-                  </span>
+                  {/*
+                    A real button, not an <li onClick>. Selecting a song is
+                    this app's most basic action and it used to be reachable
+                    only with a mouse: the row had no tab stop, no role and no
+                    key handler. The button brings the tab stop, Enter/Space
+                    and the kit's focus ring with it, for free.
+                  */}
+                  <button
+                    type="button"
+                    className="sidebar-item-main"
+                    onClick={() => onSelect(s.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Delete' || e.key === 'Backspace') {
+                        e.preventDefault()
+                        setPendingDelete(s)
+                      }
+                    }}
+                    onContextMenu={(e) => {
+                      e.preventDefault()
+                      setPendingDelete(s)
+                    }}
+                  >
+                    <span className="sidebar-item-title">{s.meta.title}</span>
+                    <span className="sidebar-item-meta">
+                      {/* caps={false} because "Am" set as "AM" is a different
+                          chord — A minor becomes A major. */}
+                      {s.meta.key && (
+                        <Badge caps={false} className="sidebar-item-key">
+                          {s.meta.key}
+                        </Badge>
+                      )}
+                      {s.meta.tempo && <span className="sidebar-item-bpm">{s.meta.tempo}</span>}
+                    </span>
+                  </button>
+                  {/*
+                    Deletion had no visible affordance at all — right-click
+                    only, which is undiscoverable and unreachable by keyboard.
+                    A sibling of the row button, never a child of it: nesting
+                    one button in another is invalid and breaks both.
+
+                    Not the kit's .round-ghost: that is 34px and this row is
+                    30px tall. An inline action revealed inside a list row is
+                    not something the kit ships, so it is the app's own.
+                  */}
+                  <button
+                    type="button"
+                    className="sidebar-item-delete"
+                    onClick={() => setPendingDelete(s)}
+                    title={`Delete ${s.meta.title}`}
+                    aria-label={`Delete ${s.meta.title}`}
+                  >
+                    <svg width="9" height="9" viewBox="0 0 9 9" aria-hidden>
+                      <path
+                        d="M1 1l7 7M8 1L1 8"
+                        stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"
+                      />
+                    </svg>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -93,9 +135,11 @@ export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete }
             be undone.
           </p>
           <ModalActions>
-            {/* `danger` alongside the default ghost, not variant="danger":
-                the kit's .pill.danger sets border-COLOR only and rides on the
-                border .ghost draws, so on its own it would have none. */}
+            {/* `danger` on the default ghost rather than variant="danger".
+                Both paint the same since kit v1.4.0 gave .pill.danger its own
+                border; before that it set border-COLOR only and needed
+                .ghost underneath. Kept as-is because it is correct, not
+                because it is required. */}
             <Button
               className="danger"
               onClick={() => {

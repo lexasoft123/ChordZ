@@ -207,22 +207,78 @@ body {
   padding: var(--s-2) var(--s-2) var(--s-1);
 }
 
+/*
+ * The row is the <li>: it draws the surface and the selected edge. The button
+ * inside it is the control, and the x is the button's sibling — a button
+ * nested in a button is invalid HTML and neither one works properly.
+ */
 .sidebar-item {
   position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast);
+}
+
+.sidebar-item:hover,
+.sidebar-item:focus-within {
+  background: var(--panel);
+}
+
+.sidebar-item-main {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--s-2);
   padding: var(--s-2) var(--s-2);
   border-radius: var(--radius-sm);
+  color: inherit;
   cursor: pointer;
+  transition: color var(--dur-fast);
+}
+
+/*
+ * Revealed by hover AND by focus-within: a control that only appears under a
+ * pointer is a control a keyboard cannot find.
+ *
+ * It sits over the row rather than in it. Holding a 22px column open on every
+ * row costs four characters of every title, permanently, for an action used
+ * rarely — so the key/BPM readout steps aside for the moment the x is up
+ * instead. Nothing reflows either way.
+ */
+.sidebar-item-delete {
+  position: absolute;
+  right: var(--s-1);
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: var(--dim);
+  opacity: 0;
   transition:
+    opacity var(--dur-fast),
     background var(--dur-fast),
     color var(--dur-fast);
 }
 
-.sidebar-item:hover {
-  background: var(--panel);
+.sidebar-item:hover .sidebar-item-delete,
+.sidebar-item:focus-within .sidebar-item-delete {
+  opacity: 1;
+}
+
+.sidebar-item:hover .sidebar-item-meta,
+.sidebar-item:focus-within .sidebar-item-meta {
+  opacity: 0;
+}
+
+.sidebar-item-delete:hover {
+  background: var(--danger-wash);
+  color: var(--danger);
 }
 
 .sidebar-item[data-active='1'] {
@@ -256,6 +312,10 @@ body {
   font-weight: 600;
 }
 
+.sidebar-item[data-active='1'] .sidebar-item-main {
+  color: var(--accent);
+}
+
 .sidebar-item-meta {
   flex: none;
   display: flex;
@@ -264,13 +324,13 @@ body {
   font-family: var(--font-mono);
   font-size: var(--t-micro);
   color: var(--dim);
+  transition: opacity var(--dur-fast);
 }
 
 /*
- * .sidebar-item-key carries no rules: it was a hand-written restatement of
- * the kit's .badge — same size, colour, border and radius — on an element
- * that already IS a <Badge caps={false}>. The class stays on the element as
- * a hook for the row layout below; the look comes from the kit.
+ * .sidebar-item-key deliberately carries no rules. It was a hand-written
+ * restatement of the kit's .badge — same size, colour, border and radius — on
+ * an element that already IS a <Badge caps={false}>.
  */
 
 .sidebar-item-bpm::after {
