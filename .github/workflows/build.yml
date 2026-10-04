@@ -69,6 +69,13 @@ jobs:
           done
           for dmg in release/*.dmg; do
             test -f "$dmg"
+            # electron-builder notarizes the app, not the outer disk image.
+            # Submit the DMG separately before asking Apple for its ticket.
+            xcrun notarytool submit "$dmg" \
+              --key "$APPLE_API_KEY" --key-id "$APPLE_API_KEY_ID" \
+              --issuer "$APPLE_API_ISSUER" --wait --timeout 20m \
+              --output-format json > "$RUNNER_TEMP/chordz-dmg-notarization.json"
+            node -e 'const r = JSON.parse(require("fs").readFileSync(process.argv[1])); if (r.status !== "Accepted") throw new Error("DMG notarization " + r.status + ", submission " + r.id)' "$RUNNER_TEMP/chordz-dmg-notarization.json"
             xcrun stapler staple "$dmg"
             xcrun stapler validate "$dmg"
           done

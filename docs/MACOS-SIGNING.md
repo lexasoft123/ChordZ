@@ -23,7 +23,7 @@ The API-key authentication path does not require `APPLE_TEAM_ID`; the issuer ide
 1. `scripts/setup-macos-signing.sh` imports the certificate into an isolated temporary keychain and validates its Developer ID identity.
 2. The script sets `CSC_KEYCHAIN` and `CSC_NAME`. It decodes the `.p8` to a mode-600 file and sets `APPLE_API_KEY` to that **path**, plus `APPLE_API_KEY_ID` and `APPLE_API_ISSUER`.
 3. `scripts/afterPack.cjs` repairs the repacked Electron bundle's signature with an ad-hoc pass. electron-builder then replaces that with Developer ID signing, using Hardened Runtime and the supplied entitlements, and submits the app to Apple.
-4. CI verifies the app signature, Gatekeeper assessment and stapled app ticket. It staples and validates the DMG ticket, then uploads the installer.
+4. CI verifies the app signature, Gatekeeper assessment and stapled app ticket. It submits the outer DMG to Apple separately, requires an Accepted result, then staples and validates its ticket before uploading the installer.
 5. An `always()` cleanup step deletes the temporary keychain, certificate and API-key files.
 
 **Do not replace this with `CSC_LINK`.** In electron-builder 26.15.3, its certificate import passes the `.p12` password to `security set-key-partition-list`, which expects the temporary keychain password. The manual import uses the correct password.
