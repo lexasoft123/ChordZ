@@ -1,34 +1,29 @@
-import { atelier, tokens } from '@singz/ui/tokens'
-import type { CSSProperties } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { bridge } from './platform/bridge'
-import { parseChordPro, serializeChordPro, type Song } from './lib/chordpro'
+import { parseChordPro, type Song } from './lib/chordpro'
 import { transposeSong } from './lib/transpose'
 import { SAMPLE_SONGS } from './lib/samples'
+import { decodeLibrary, encodeLibrary, type LibraryState } from './lib/library'
+import { prefersLight } from './lib/prefersMotion'
 import Workspace from './components/Workspace'
-import ThemeSwitcher, { type ThemeMode } from './components/ThemeSwitcher'
-import Titlebar from './components/Titlebar'
+import Titlebar, { type Palette } from './components/Titlebar'
+import Toast from './components/Toast'
 
-interface LibraryState {
-  songs: Song[]
-  selectedId: string | null
-}
+/** What the last write to disk did. The sidebar footer says so in words.
+ *  'off' is the read-failed case: writing stays disabled for the session so
+ *  an unreadable library is not overwritten, and the footer has to keep
+ *  saying so — the toast that explained it is long gone by then. */
+export type SaveState = 'idle' | 'saving' | 'saved' | 'failed' | 'off'
 
 interface PrefState {
-  theme: ThemeMode
-  dark: boolean
+  palette: Palette
   preferFlats: boolean
   fontScale: number
   showHelper: boolean
+  metaOpen: boolean
 }
 
-
-function paletteStyle(theme: string, dark: boolean): CSSProperties {
-  const palette = theme === 'atelier' && !dark ? { ...tokens, ...atelier } : tokens
-  return Object.fromEntries(Object.entries(palette).map(([key, value]) => [`--sz-${key}`, value])) as CSSProperties
-}
-
-const PREFS_KEY = 'chordz:prefs:v1'
+const PREFS_KEY = 'chordz:prefs:v2'
 const FONT_SCALE_MIN = 0.7
 const FONT_SCALE_MAX = 2.2
 const FONT_SCALE_STEP = 0.1
@@ -40,18 +35,28 @@ function clampScale(n: number): number {
 
 function loadPrefs(): PrefState {
   try {
-    const raw = localStorage.getItem(PREFS_KEY)
+    const raw = localStorage.getItem(PREFS_KEY) ?? localStorage.getItem('chordz:prefs:v1')
     if (!raw) throw 0
     const p = JSON.parse(raw)
     return {
-      theme: (p.theme as ThemeMode) || 'atelier',
-      dark: !!p.dark,
+      // A stored choice always wins, and stays won. The OS only decides for
+      // someone who has never expressed one.
+      palette: p.palette === 'atelier' || (!p.palette && p.theme === 'atelier' && !p.dark) ? 'atelier' : 'night',
       preferFlats: !!p.preferFlats,
       fontScale: clampScale(typeof p.fontScale === 'number' ? p.fontScale : 1),
       showHelper: !!p.showHelper,
+      metaOpen: !!p.metaOpen,
     }
   } catch {
-    return { theme: 'atelier', dark: false, preferFlats: false, fontScale: 1, showHelper: false }
+    // No stored preference: follow the machine. A laptop set to a light
+    // appearance used to open this app in the dark anyway.
+    return {
+      palette: prefersLight() ? 'atelier' : 'night',
+      preferFlats: false,
+      fontScale: 1,
+      showHelper: false,
+      metaOpen: false,
+    }
   }
 }
 
@@ -65,51 +70,97 @@ function makeInitialLibrary(): LibraryState {
 }
 
 export default function App() {
-  const [{ songs, selectedId }, setLibrary] = useState<LibraryState>(makeInitialLibrary)
+  const [{ songs, selectedId }, setLibrary] = useState<LibraryState>({ songs: [], selectedId: null })
   const [prefs, setPrefs] = useState<PrefState>(loadPrefs)
   const [transposeBySong, setTransposeBySong] = useState<Record<string, number>>({})
-  const hydratedRef = useRef(false)
+  const [hydrating, setHydrating] = useState(true)
+  const [saveState, setSaveState] = useState<SaveState>('idle')
+  const [toast, setToast] = useState<{ n: number; message: string } | null>(null)
+  const toastCount = useRef(0)
 
-  // Hydrate library from disk/localStorage
-  useEffect(() => {
-    let cancelled = false
-    bridge.loadLibrary().then((raw) => {
-      if (cancelled || !raw) return
-      try {
-        const parsed = JSON.parse(raw) as { sources: string[]; selectedId?: string | null }
-        if (Array.isArray(parsed.sources) && parsed.sources.length) {
-          const songsFromDisk = parsed.sources.map((src, i) => parseChordPro(src, `restored-${i}`))
-          setLibrary({
-            songs: songsFromDisk,
-            selectedId: parsed.selectedId ?? songsFromDisk[0]?.id ?? null,
-          })
-        }
-      } catch {
-        /* corrupt — keep samples */
-      } finally {
-        hydratedRef.current = true
-      }
-    })
-    return () => { cancelled = true }
+  /*
+   * Writing is off until a read has succeeded. If the library on disk could
+   * not be parsed, the app must not then serialise its empty state over the
+   * top of it — a visible error that destroys the file it is reporting is
+   * worse than the silent failure it replaced.
+   */
+  const canSave = useRef(false)
+
+  const notify = useCallback((message: string) => {
+    toastCount.current += 1
+    setToast({ n: toastCount.current, message })
   }, [])
 
-  // Persist library
+  // Hydrate the library from disk. Nothing renders as "yours" until this
+  // settles: the app used to show sample songs and then swap them out, so the
+  // first thing you saw was content that was not yours.
   useEffect(() => {
-    if (!hydratedRef.current) return
-    const payload = JSON.stringify({
-      sources: songs.map((s) => serializeChordPro(s)),
-      selectedId,
-    })
-    bridge.saveLibrary(payload)
-  }, [songs, selectedId])
+    let cancelled = false
+    bridge
+      .loadLibrary()
+      .then((raw) => {
+        if (cancelled) return
+        if (raw === null) {
+          // Genuinely empty — a first run. Samples are a welcome, not a patch.
+          setLibrary(makeInitialLibrary())
+          canSave.current = true
+          return
+        }
+        try {
+          setLibrary(decodeLibrary(raw))
+          canSave.current = true
+        } catch {
+          setSaveState('off')
+          notify(
+            'Your library file could not be read, so nothing has been loaded. ' +
+              'Saving is off for this session so the file is not overwritten.',
+          )
+        }
+      })
+      .catch(() => {
+        if (cancelled) return
+        setSaveState('off')
+        notify('Your library could not be opened. Saving is off for this session.')
+      })
+      .finally(() => {
+        if (!cancelled) setHydrating(false)
+      })
+    return () => { cancelled = true }
+  }, [notify])
+
+  // Persist the library.
+  useEffect(() => {
+    if (hydrating || !canSave.current) return
+    const payload = encodeLibrary({ songs, selectedId })
+    setSaveState('saving')
+    let cancelled = false
+    bridge
+      .saveLibrary(payload)
+      .then((ok) => {
+        if (cancelled) return
+        setSaveState(ok ? 'saved' : 'failed')
+        if (!ok) {
+          notify('Could not save to disk. Your changes are still here, but not written yet.')
+        }
+      })
+      .catch(() => {
+        if (cancelled) return
+        setSaveState('failed')
+        notify('Could not save to disk. Your changes are still here, but not written yet.')
+      })
+    return () => { cancelled = true }
+  }, [songs, selectedId, hydrating, notify])
 
   useEffect(() => savePrefs(prefs), [prefs])
 
-  // Apply dark class to document so OS chrome / scrollbars also feel right
+  // The kit ships the light palette; switching it on is one attribute.
+  // On <html>, not on a wrapper: the modal scrim and the ambient layers
+  // both render outside the app subtree.
   useEffect(() => {
-    document.documentElement.dataset.dark = prefs.dark ? '1' : '0'
-    document.documentElement.dataset.theme = prefs.theme
-  }, [prefs.dark, prefs.theme])
+    const root = document.documentElement
+    if (prefs.palette === 'atelier') root.setAttribute('data-sz-palette', 'atelier')
+    else root.removeAttribute('data-sz-palette')
+  }, [prefs.palette])
 
   // Keyboard shortcuts: Cmd/Ctrl + / − / 0 control preview font size
   useEffect(() => {
@@ -185,55 +236,37 @@ export default function App() {
     setTransposeBySong((t) => ({ ...t, [id]: steps }))
   }, [])
 
-  const workspaceProps = {
-    songs,
-    selectedSong,
-    displaySong,
-    transpose,
-    onTransposeChange: (n: number) =>
-      selectedSong && setTranspose(selectedSong.id, n),
-    onSelectSong: selectSong,
-    onUpdateSong: updateSong,
-    onUpdateSongSource: updateSongSource,
-    onNewSong: newSong,
-    onDeleteSong: deleteSong,
-    preferFlats: prefs.preferFlats,
-    onPreferFlatsChange: (v: boolean) => setPrefs({ ...prefs, preferFlats: v }),
-    dark: prefs.dark,
-    onDarkChange: (v: boolean) => setPrefs({ ...prefs, dark: v }),
-    fontScale: prefs.fontScale,
-    onFontScaleChange: (n: number) =>
-      setPrefs((p) => ({ ...p, fontScale: clampScale(n) })),
-    showHelper: prefs.showHelper,
-    onShowHelperChange: (v: boolean) => setPrefs((p) => ({ ...p, showHelper: v })),
-  }
-
   return (
-    <div style={paletteStyle(prefs.theme === 'compare' ? 'atelier' : prefs.theme, prefs.dark)} className={`app-root theme-${prefs.theme}`} data-dark={prefs.dark ? '1' : '0'}>
+    <div className="app">
       <Titlebar
-        theme={prefs.theme}
-        right={
-          <ThemeSwitcher
-            value={prefs.theme}
-            onChange={(t) => setPrefs({ ...prefs, theme: t })}
-            dark={prefs.dark}
-            onDarkChange={(v) => setPrefs({ ...prefs, dark: v })}
-          />
-        }
+        palette={prefs.palette}
+        onPaletteChange={(palette) => setPrefs((p) => ({ ...p, palette }))}
       />
-      {prefs.theme === 'compare' ? (
-        <div className="compare-split">
-          <div style={paletteStyle('atelier', prefs.dark)} className="compare-pane theme-atelier" data-dark={prefs.dark ? '1' : '0'}>
-            <div className="compare-label">Atelier</div>
-            <Workspace {...workspaceProps} themeKey="atelier" compact />
-          </div>
-          <div style={paletteStyle('studio', prefs.dark)} className="compare-pane theme-studio" data-dark={prefs.dark ? '1' : '0'}>
-            <div className="compare-label">Studio</div>
-            <Workspace {...workspaceProps} themeKey="studio" compact />
-          </div>
-        </div>
-      ) : (
-        <Workspace {...workspaceProps} themeKey={prefs.theme} />
+      <Workspace
+        hydrating={hydrating}
+        saveState={saveState}
+        onError={notify}
+        songs={songs}
+        selectedSong={selectedSong}
+        displaySong={displaySong}
+        transpose={transpose}
+        onTransposeChange={(n) => selectedSong && setTranspose(selectedSong.id, n)}
+        onSelectSong={selectSong}
+        onUpdateSong={updateSong}
+        onUpdateSongSource={updateSongSource}
+        onNewSong={newSong}
+        onDeleteSong={deleteSong}
+        preferFlats={prefs.preferFlats}
+        onPreferFlatsChange={(v) => setPrefs((p) => ({ ...p, preferFlats: v }))}
+        fontScale={prefs.fontScale}
+        onFontScaleChange={(n) => setPrefs((p) => ({ ...p, fontScale: clampScale(n) }))}
+        showHelper={prefs.showHelper}
+        onShowHelperChange={(v) => setPrefs((p) => ({ ...p, showHelper: v }))}
+        metaOpen={prefs.metaOpen}
+        onMetaOpenChange={(v) => setPrefs((p) => ({ ...p, metaOpen: v }))}
+      />
+      {toast && (
+        <Toast key={toast.n} message={toast.message} onDismiss={() => setToast(null)} />
       )}
     </div>
   )

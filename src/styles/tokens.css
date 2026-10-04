@@ -1,12 +1,157 @@
-/* Shared token shape. Atelier & Studio supply concrete values. */
+/* ════════════════════════════════════════════════════════════════
+   ChordZ · night-studio
+
+   Every colour in the app comes from @singz/ui. The app's own short
+   names below are ALIASES, not copies — one place defines a colour,
+   and the kit and the app can never drift apart the way two hand-
+   transcribed palettes do.
+
+   Rule: never write a literal colour outside this file. The one exception
+   is Fretboard.tsx, whose rosewood/pearl/nickel gradients are an instrument's
+   materials rather than UI chrome; its flat colours still come from here.
+   ════════════════════════════════════════════════════════════════ */
+
 :root {
-  --titlebar-h: 44px;
+  /* ─── surfaces ─── */
+  --bg: var(--sz-bg);
+  --panel: var(--sz-panel);
+  --panel-deep: var(--sz-panel-deep);
+  --surface-raised: var(--sz-surface-raised);
+  --control-fill: var(--sz-control-fill);
+  --footer-fill: var(--sz-footer-fill);
+
+  /* ─── hairlines ─── */
+  --line: var(--sz-line);
+  --line-strong: var(--sz-line-strong);
+
+  /* ─── foreground ───
+     Two text tiers, not three. --faint measures 2.98-3.44:1 against every
+     ground in both palettes, so it fails AA for anything a user reads; the
+     app used it for fifteen text rules and every one of them was a contrast
+     failure in the audit. It survives here for non-text only — the muted-
+     string stroke on a chord diagram, where the 3:1 non-text minimum
+     applies — and for incidental glyphs that carry nothing to read.
+     If you are about to set `color: var(--faint)`, you want --dim. */
+  --text: var(--sz-text);
+  --dim: var(--sz-dim);
+  --faint: var(--sz-faint);
+
+  /* ─── brand ─── */
+  --accent: var(--sz-accent);
+  --accent-soft: var(--sz-accent-soft);
+  --accent-ink: var(--sz-accent-ink);
+  --accent-line: var(--sz-accent-line);
+  --danger: var(--sz-danger);
+  --danger-wash: var(--sz-danger-strong-wash);
+
+  /* ─── type ───
+     The kit declares --sz-font-* but ships no faces, so the app assigns
+     THE KIT'S variables (not parallel ones of its own): a kit rule that
+     reads var(--sz-font-display) cannot see an app-local --font-display,
+     and the failure mode is every pill button silently falling back to
+     system-ui. The app's own aliases then read from the kit's. */
+  --sz-font-display: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  --sz-font-mono: 'Martian Mono Variable', ui-monospace, 'SF Mono', monospace;
+  --font-display: var(--sz-font-display);
+  --font-mono: var(--sz-font-mono);
+
+  /* ─── type scale ───
+     Six steps. Before this there were seventeen, with half-pixel stops at
+     9.5, 10.5, 11.5 and 12.5 — sizes chosen one rule at a time, which is
+     how you end up with four different "small label". Every size below is
+     named for the job it does; if a new rule needs a size that is not here,
+     the rule is wrong, not the scale.
+
+     Rounding used when collapsing the old values: nearest step, ties up. */
+  --t-micro: 10px;   /* eyebrow, badge, mono readouts, timecodes */
+  --t-ui: 12px;      /* controls, inputs, chips, secondary text */
+  --t-body: 14px;    /* list rows, panel values, the editor */
+  --t-lead: 17px;    /* the song line, the wordmark, a large diagram */
+  --t-display: 22px; /* the performance lyric */
+  --t-title: 30px;   /* the song title */
+
+  /* Typography *inside* a drawn instrument — a finger number in a chord
+     dot, a scale degree on a fret. Sized to the drawing's geometry, not to
+     the UI, and deliberately outside the scale above for that reason. */
+  --t-glyph: 8px;
+
+  /* ─── spacing scale ───
+     An 8px base with a 4px half-step, plus one 2px hairline for insets that
+     sit inside a line of text. Before this there were twenty-two values and
+     no grid. Collapsing rule: nearest step, ties toward the 8px base. */
+  --s-hair: 2px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+
+  /* ─── metrics ─── */
   --sidebar-w: 264px;
-  --meta-w: 280px;
-  --player-h: 56px;
+  --meta-w: 288px;
+  --player-h: 60px;
+  --radius-sm: 7px;
+  --radius-md: 12px;
+  --radius-pill: 99px; /* the kit's badge/chip radius, not a second 999px */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.6, 0, 0.4, 1);
-  --t-fast: 120ms;
-  --t-med: 220ms;
-  --t-slow: 380ms;
+  --dur-fast: 120ms;
+
+  /* ─── chord diagrams ─── */
+  --diagram-string: color-mix(in srgb, var(--text) 45%, transparent);
+  --diagram-fret: color-mix(in srgb, var(--text) 28%, transparent);
+  --diagram-nut: color-mix(in srgb, var(--text) 70%, transparent);
+  --diagram-dot: var(--accent);
+  --diagram-dot-text: var(--accent-ink);
+  --diagram-open: var(--text);
+  --diagram-mute: var(--faint);
+  --diagram-barre: var(--accent);
+  --diagram-strokew: 1px;
+
+  /* ─── scale tones ───
+     The blues note is the one degree that is not the accent, so it needs a
+     colour of its own. It was a literal violet in app.css, which meant it
+     stayed a night colour when the light palette arrived: 6.85:1 on a dark
+     panel, 2.08:1 on a pale one. */
+  --tone-blues: #da81da;
+  --tone-blues-line: color-mix(in srgb, var(--tone-blues) 40%, transparent);
+
+  /* ─── fretboard ───
+     Hues chosen to sit beside the kit's stem palette rather than beside
+     each other: a box outline must never read as another box's. */
+  --fb-board-top: #251d15;
+  --fb-board-bot: #15110d;
+  --fb-fret: #8a7f6d;
+  --fb-string: #d9cfba;
+  --fb-number: var(--dim);
+  --fb-label-bg: var(--panel-deep);
+  --fb-note-text: #fffaf2;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ATELIER — the same design in daylight.
+
+   The palette itself now ships in the kit: `data-sz-palette="atelier"` on
+   <html> re-defines every --sz-* token, and because the app's names above
+   are aliases rather than copies, the whole of ChordZ follows. What is left
+   here is only what the kit has no opinion about — a chord diagram and a
+   fretboard are ChordZ's own furniture.
+   ════════════════════════════════════════════════════════════════ */
+
+:root[data-sz-palette='atelier'] {
+  /* Thin dark lines wash out on paper the way thin light ones do not. */
+  --diagram-string: color-mix(in srgb, var(--text) 60%, transparent);
+  --diagram-fret: color-mix(in srgb, var(--text) 40%, transparent);
+
+  /* Violet at 68% lightness is 2.08:1 on paper. Same hue, darker, 6.14:1. */
+  --tone-blues: #8a288a;
+
+  /* A rosewood board still reads as rosewood on a light page — it is an
+     instrument sitting on the paper, not a panel of the UI. */
+  --fb-board-top: #4a3a29;
+  --fb-board-bot: #35281c;
+  --fb-fret: #cbbfa8;
+  --fb-string: #f2e9d8;
+  --fb-label-bg: #2a1f14;
 }

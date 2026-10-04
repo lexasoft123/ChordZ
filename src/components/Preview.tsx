@@ -11,10 +11,10 @@ const SECTION_LABEL: Record<Section['kind'], string> = {
   tab: 'Tab',
 }
 
-export default function Preview({ song, themeKey }: { song: Song; themeKey: 'atelier' | 'studio' }) {
+export default function Preview({ song }: { song: Song }) {
   const verseNumbers = useMemo(() => numberVerses(song.sections), [song.sections])
   return (
-    <article className="preview" data-theme={themeKey}>
+    <article className="preview">
       <div className="preview-page">
         {song.sections.map((sec, si) => (
           <SectionBlock
@@ -42,7 +42,7 @@ function SectionBlock({ section, verseNumber }: { section: Section; verseNumber?
   return (
     <section className={`preview-section preview-section-${section.kind}`}>
       <div className="preview-section-head">
-        <span className="preview-section-tag">
+        <span className="eyebrow preview-section-tag">
           {SECTION_LABEL[section.kind]}
           {verseNumber !== undefined ? ` ${verseNumber}` : ''}
         </span>

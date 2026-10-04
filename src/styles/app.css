@@ -1,608 +1,578 @@
 /* ════════════════════════════════════════════════════════════════
-   LAYOUT
+   ChordZ · night-studio
+
+   The kit owns pills, chips, the segmented control, the modal shell,
+   the status dot and the window chrome. What is here is the app's own
+   furniture — the library, the song page, the transport, the helper —
+   drawn in the same language and out of the same tokens.
    ════════════════════════════════════════════════════════════════ */
 
-.app-root {
-  height: 100vh;
-  width: 100vw;
-  display: grid;
-  grid-template-rows: var(--titlebar-h) 1fr;
-  overflow: hidden;
+body {
   background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-body);
-}
-
-/* ─── Titlebar ─────────────────────────────────────────────────── */
-
-.titlebar {
-  display: grid;
-  grid-template-columns: 96px 1fr auto;
-  align-items: center;
-  height: var(--titlebar-h);
-  -webkit-app-region: drag;
-  border-bottom: 1px solid var(--hairline);
-  background: var(--bg);
-  backdrop-filter: saturate(140%) blur(8px);
-  position: relative;
-  z-index: 50;
-}
-.titlebar-trafficlight-reserve {
-  width: 96px;
-  height: 100%;
-}
-.titlebar-drag {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-.titlebar-wordmark {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
+  color: var(--text);
   font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: -0.005em;
-  user-select: none;
-}
-.titlebar-wordmark-glyph {
-  color: var(--accent);
-  font-size: 13px;
-  transform: translateY(-1px);
-}
-.titlebar-actions {
-  -webkit-app-region: no-drag;
-  padding-right: 14px;
-  display: flex;
-  align-items: center;
 }
 
-/* ─── Theme Switcher ───────────────────────────────────────────── */
-
-.theme-switcher {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.theme-switcher-group {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px;
-  border: 1px solid var(--hairline);
-  border-radius: 999px;
-  background: var(--bg-elevated);
-}
-.theme-switcher-btn {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--ink-soft);
-  padding: 4px 10px;
-  border-radius: 999px;
-  transition: color var(--t-fast), background var(--t-fast);
-}
-.theme-switcher-btn[data-active="1"] {
-  background: var(--ink);
-  color: var(--bg-elevated);
-}
-.theme-switcher-dark {
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  border: 1px solid var(--hairline);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink-soft);
-  background: var(--bg-elevated);
-  font-size: 14px;
-  transition: transform var(--t-med) var(--ease-out);
-}
-.theme-switcher-dark:hover { transform: rotate(20deg); }
-
-/* ─── Compare Split ────────────────────────────────────────────── */
-
-.compare-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+ /* The kit's chrome layer raises .app off z-index 0 so its film grain can
+   sit above everything; height and direction are the app's own. */
+.app {
   height: 100%;
-  overflow: hidden;
-}
-.compare-pane {
-  position: relative;
-  overflow: hidden;
-  border-right: 1px solid var(--hairline);
-  background: var(--bg);
-  background-image: var(--paper-grain, none);
-  background-size: 240px 240px;
-  color: var(--ink);
-}
-.compare-pane:last-child { border-right: none; }
-.compare-label {
-  position: absolute;
-  top: 6px;
-  right: 10px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  z-index: 10;
-  pointer-events: none;
-}
-
-/* ─── Workspace ────────────────────────────────────────────────── */
-
-.workspace {
-  display: grid;
-  grid-template-columns: var(--sidebar-w) 1fr;
-  height: 100%;
-  overflow: hidden;
-  color: var(--ink);
-  background: var(--bg);
-  background-image: var(--paper-grain, none);
-  background-size: 240px 240px;
-}
-.workspace[data-compact="1"] {
-  grid-template-columns: 1fr;
-}
-.workspace[data-compact="1"] .toolbar { padding-left: 22px; padding-right: 22px; }
-.workspace[data-compact="1"] .preview { padding-left: 28px; padding-right: 28px; }
-.workspace[data-compact="1"] .mode-segmented,
-.workspace[data-compact="1"] .toolbar-meta-toggle { display: none; }
-.workspace-main {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  background: var(--bg);
-}
-.workspace-main > .toolbar      { flex: 0 0 auto; }
-.workspace-main > .workspace-body { flex: 1 1 auto; min-height: 0; }
-.workspace-main > .guitar-helper { flex: 0 0 auto; }
-.workspace-main > .player       { flex: 0 0 var(--player-h); }
-.workspace-body {
-  display: grid;
-  overflow: hidden;
-  background: var(--bg);
-}
-.workspace-body.mode-preview     { grid-template-columns: 1fr auto; }
-.workspace-body.mode-edit        { grid-template-columns: 1fr auto; }
-.workspace-body.mode-split       { grid-template-columns: 1fr 1fr auto; }
-
-.workspace-empty {
-  display: grid;
-  place-items: center;
-  height: 100%;
-  background: var(--bg);
-}
-.workspace-empty-inner { text-align: center; }
-.workspace-empty-mark {
-  font-family: var(--font-display);
-  font-size: 96px;
-  color: var(--ink-faint);
-  line-height: 0.8;
-  margin-bottom: 16px;
-}
-.workspace-empty-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  color: var(--ink-soft);
-  margin-bottom: 16px;
-}
-.workspace-empty-btn {
-  padding: 10px 18px;
-  border: 1px solid var(--ink-line);
-  border-radius: var(--radius-md);
-  background: var(--bg-elevated);
-  font-family: var(--font-ui);
-  font-size: 13px;
 }
 
 /* ════════════════════════════════════════════════════════════════
-   SIDEBAR
+   TITLEBAR   (.titlebar, .no-drag and the platform padding are the kit's)
+   ════════════════════════════════════════════════════════════════ */
+
+.logo {
+  font-weight: 800;
+  font-size: var(--t-lead);
+  letter-spacing: 0.02em;
+  font-variation-settings: 'wdth' 88;
+}
+
+.logo span {
+  color: var(--accent);
+  font-style: italic;
+  margin-left: var(--s-hair);
+}
+
+.titlebar-tag {
+  font-size: var(--t-ui);
+  color: var(--dim);
+  letter-spacing: 0.02em;
+  margin-left: calc(-1 * var(--s-1));
+}
+
+.titlebar-fill {
+  flex: 1;
+}
+
+.palette-btn {
+  color: var(--dim);
+}
+
+.palette-btn:hover {
+  color: var(--accent);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   WORKSPACE
+   ════════════════════════════════════════════════════════════════ */
+
+.workspace {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+}
+
+.workspace-main {
+  /* min-height:0 on BOTH axes: a grid item defaults to min-height:auto, so
+     without this the song page pushes the transport off the bottom of the
+     window instead of scrolling inside itself. */
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-main > .toolbar {
+  flex: 0 0 auto;
+}
+
+.workspace-main > .workspace-body {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.workspace-main > .guitar-helper {
+  flex: 0 0 auto;
+}
+
+.workspace-main > .player {
+  flex: 0 0 var(--player-h);
+}
+
+.workspace-body {
+  display: grid;
+  min-height: 0;
+}
+
+.workspace-body > * {
+  min-height: 0;
+}
+
+.workspace-body.mode-preview,
+.workspace-body.mode-edit {
+  grid-template-columns: 1fr auto;
+}
+
+.workspace-body.mode-split {
+  grid-template-columns: 1fr 1fr auto;
+}
+
+.workspace-empty {
+  flex: 1;
+  display: grid;
+  place-items: center;
+}
+
+.workspace-empty-inner {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  text-align: center;
+}
+
+.workspace-empty-mark {
+  font-size: var(--t-title);
+  color: var(--accent);
+  opacity: 0.5;
+  line-height: 1;
+}
+
+.workspace-empty-title {
+  font-size: var(--t-body);
+  font-weight: 600;
+  color: var(--dim);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SIDEBAR — the library
    ════════════════════════════════════════════════════════════════ */
 
 .sidebar {
-  border-right: 1px solid var(--hairline);
-  background: var(--bg-spine);
-  display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  overflow: hidden;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--panel-deep);
+  border-right: 1px solid var(--line);
 }
+
 .sidebar-head {
-  padding: 14px 18px 10px;
+  flex: none;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-.sidebar-head-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-.sidebar-new {
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink-soft);
-  border: 1px solid var(--hairline);
-  background: var(--bg-elevated);
-  transition: transform var(--t-fast), background var(--t-fast), color var(--t-fast);
-}
-.sidebar-new:hover {
-  color: var(--accent);
-  transform: scale(1.06);
+  padding: 0 var(--s-3) 0 var(--s-4);
+  border-bottom: 1px solid var(--line);
 }
 
 .sidebar-search {
-  padding: 0 14px 12px;
+  flex: none;
+  padding: var(--s-3) var(--s-3) var(--s-2);
 }
+
 .sidebar-search input {
   width: 100%;
-  padding: 7px 10px;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  background: var(--bg-elevated);
-  font-size: 13px;
-  color: var(--ink);
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--t-ui);
+  color: var(--text);
+  background: var(--control-fill);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  transition: border-color var(--dur-fast);
 }
-.sidebar-search input::placeholder { color: var(--ink-faint); }
-.sidebar-search input:focus { border-color: var(--accent-soft); }
+
+.sidebar-search input::placeholder {
+  color: var(--dim);
+}
+
+.sidebar-search input:focus {
+  border-color: var(--accent-line);
+}
 
 .sidebar-list {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 4px 8px 12px;
+  padding: var(--s-1) var(--s-2) var(--s-3);
 }
+
 .sidebar-empty {
-  padding: 16px;
-  color: var(--ink-faint);
-  font-size: 12px;
+  padding: var(--s-4) var(--s-2);
+  font-size: var(--t-ui);
+  color: var(--dim);
   text-align: center;
 }
-.sidebar-group + .sidebar-group { margin-top: 10px; }
+
+.sidebar-group + .sidebar-group {
+  margin-top: var(--s-3);
+}
+
 .sidebar-group-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.20em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  padding: 6px 10px 4px;
+  padding: var(--s-2) var(--s-2) var(--s-1);
 }
+
+/*
+ * The row is the <li>: it draws the surface and the selected edge. The button
+ * inside it is the control, and the x is the button's sibling — a button
+ * nested in a button is invalid HTML and neither one works properly.
+ */
 .sidebar-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 8px 10px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: background var(--t-fast);
   position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast);
 }
-.sidebar-item:hover { background: var(--bg-elevated); }
-.sidebar-item[data-active="1"] {
-  background: var(--bg-elevated);
-  box-shadow: inset 2px 0 0 var(--accent);
+
+.sidebar-item:hover,
+.sidebar-item:focus-within {
+  background: var(--panel);
 }
+
+.sidebar-item-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-2);
+  border-radius: var(--radius-sm);
+  color: inherit;
+  cursor: pointer;
+  transition: color var(--dur-fast);
+}
+
+/*
+ * Revealed by hover AND by focus-within: a control that only appears under a
+ * pointer is a control a keyboard cannot find.
+ *
+ * It sits over the row rather than in it. Holding a 22px column open on every
+ * row costs four characters of every title, permanently, for an action used
+ * rarely — so the key/BPM readout steps aside for the moment the x is up
+ * instead. Nothing reflows either way.
+ */
+.sidebar-item-delete {
+  position: absolute;
+  right: var(--s-1);
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: var(--dim);
+  opacity: 0;
+  transition:
+    opacity var(--dur-fast),
+    background var(--dur-fast),
+    color var(--dur-fast);
+}
+
+.sidebar-item:hover .sidebar-item-delete,
+.sidebar-item:focus-within .sidebar-item-delete {
+  opacity: 1;
+}
+
+.sidebar-item:hover .sidebar-item-meta,
+.sidebar-item:focus-within .sidebar-item-meta {
+  opacity: 0;
+}
+
+.sidebar-item-delete:hover {
+  background: var(--danger-wash);
+  color: var(--danger);
+}
+
+.sidebar-item[data-active='1'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* The selected song gets a lit edge rather than a heavier fill — the
+   library is a list you scan, and a filled row every time you arrow
+   through it is a lot of light for a dark room. */
+.sidebar-item[data-active='1']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--s-2);
+  bottom: var(--s-2);
+  width: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+}
+
 .sidebar-item-title {
-  font-size: 14px;
-  font-family: var(--font-ui);
-  color: var(--ink);
-  letter-spacing: -0.005em;
-  white-space: nowrap;
+  font-size: var(--t-body);
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
+.sidebar-item[data-active='1'] .sidebar-item-title {
+  font-weight: 600;
+}
+
+.sidebar-item[data-active='1'] .sidebar-item-main {
+  color: var(--accent);
+}
+
 .sidebar-item-meta {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
   font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--ink-faint);
-  display: inline-flex;
-  gap: 8px;
-  letter-spacing: 0.04em;
+  font-size: var(--t-micro);
+  color: var(--dim);
+  transition: opacity var(--dur-fast);
 }
-.sidebar-item-key::after  { content: ""; }
-.sidebar-item-bpm::after  { content: " BPM"; opacity: 0.6; }
+
+/*
+ * .sidebar-item-key deliberately carries no rules. It was a hand-written
+ * restatement of the kit's .badge — same size, colour, border and radius — on
+ * an element that already IS a <Badge caps={false}>.
+ */
+
+.sidebar-item-bpm::after {
+  content: ' bpm';
+  opacity: 0.6;
+}
 
 .sidebar-foot {
-  border-top: 1px solid var(--hairline);
-  padding: 10px 16px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: var(--ink-faint);
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  border-top: 1px solid var(--line);
+  font-size: var(--t-micro);
+  color: var(--dim);
+  letter-spacing: 0.04em;
+}
+
+.sidebar-save {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.sidebar-loading {
+  padding: var(--s-4) var(--s-2);
 }
 
 /* ════════════════════════════════════════════════════════════════
    TOOLBAR
    ════════════════════════════════════════════════════════════════ */
 
+/*
+ * One row, 56px. It was two rows and 137px: a title row, and under it a strip
+ * of seven bordered control groups holding the song's key, tempo, capo,
+ * spelling, text size and a second guitar-helper toggle. Six of those were
+ * either the song's own properties — which the details panel edits — or
+ * duplicated somewhere else on the same screen. What is left is the reading
+ * controls.
+ */
 .toolbar {
-  padding: 18px 28px 14px;
-  border-bottom: 1px solid var(--hairline);
+  flex: none;
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  height: 56px;
+  padding: 0 var(--s-5);
+  border-bottom: 1px solid var(--line);
   background: var(--bg);
 }
-.toolbar-row {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-.toolbar-row-title { justify-content: space-between; }
-.toolbar-row-controls { justify-content: flex-start; }
-.toolbar-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
+
 .toolbar-titleblock {
   min-width: 0;
-  flex: 1 1 auto;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: baseline;
+  gap: var(--s-3);
 }
+
 .toolbar-title {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 34px;
-  line-height: 1.05;
+  font-size: var(--t-display);
+  font-weight: 800;
   letter-spacing: -0.015em;
-  color: var(--ink);
-  white-space: normal;
-  word-break: break-word;
-  hyphens: auto;
-}
-.workspace[data-compact="1"] .toolbar-title { font-size: 28px; }
-.toolbar-subtitle {
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--ink-faint);
+  font-variation-settings: 'wdth' 90;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.toolbar-controls {
-  display: inline-flex;
-  align-items: stretch;
-  gap: 0;
-  border: 1px solid var(--hairline);
-  background: var(--bg-elevated);
-  border-radius: var(--radius-md);
-  padding: 4px;
+/*
+ * The song's facts, read-only: artist, key, tempo, capo. The panel that edits
+ * them can stay shut without the key going with it.
+ */
+.toolbar-facts {
+  flex: none;
+  font-size: var(--t-ui);
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.control-group {
+
+.toolbar-actions {
+  flex: none;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 2px 12px;
-  border-right: 1px solid var(--hairline);
-  min-width: 64px;
+  gap: var(--s-3);
 }
-.control-group:last-child { border-right: none; }
-.control-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-bottom: 2px;
-}
-.control-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.control-btn {
-  width: 22px;
-  height: 22px;
-  border-radius: var(--radius-sm);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink-soft);
-  font-size: 14px;
-  transition: background var(--t-fast), color var(--t-fast);
-}
-.control-btn:hover { background: var(--accent-tint); color: var(--accent); }
-.control-btn-toggle[data-active="1"] {
-  background: var(--accent);
-  color: var(--bg-elevated);
-}
-.control-btn-text {
-  font-family: var(--font-display);
-  color: var(--ink);
-  line-height: 1;
-}
-.control-btn-text:disabled { opacity: 0.30; cursor: default; background: transparent; color: var(--ink-faint); }
-.control-btn-text-small { font-size: 10px; }
-.control-btn-text-large { font-size: 16px; font-weight: 500; }
-.control-readout-reset {
-  cursor: pointer;
-  padding: 2px 4px;
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  min-width: 40px;
-  transition: background var(--t-fast), color var(--t-fast);
-}
-.control-readout-reset:hover { background: var(--accent-tint); color: var(--accent); }
-.control-readout {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  color: var(--ink);
-  min-width: 22px;
-  text-align: center;
-  font-feature-settings: "tnum" 1, "zero" 1;
-}
-.control-readout-num { letter-spacing: 0.02em; }
-.control-input {
-  width: 48px;
-  padding: 2px 4px;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--ink);
-  font-feature-settings: "tnum" 1, "zero" 1;
-  background: transparent;
-  border-radius: var(--radius-sm);
-}
-.control-input::-webkit-inner-spin-button { display: none; }
-.control-input:hover, .control-input:focus { background: var(--accent-tint); }
 
-.toolbar-modes {
-  display: inline-flex;
+/* An inline label instead of one stacked above: a 56px bar has one line. */
+.toolbar-group {
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-1);
 }
-.mode-segmented {
-  display: inline-flex;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  padding: 2px;
-  background: var(--bg-elevated);
+
+.toolbar-group .eyebrow {
+  margin-right: var(--s-1);
 }
-.mode-segmented-btn {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--ink-soft);
-  padding: 5px 12px;
-  border-radius: var(--radius-sm);
-  transition: color var(--t-fast), background var(--t-fast);
-}
-.mode-segmented-btn[data-active="1"] {
-  background: var(--ink);
-  color: var(--bg-elevated);
-}
-.toolbar-perform {
-  padding: 6px 14px;
-  border: 1px solid var(--ink);
-  background: var(--ink);
-  color: var(--bg-elevated);
-  border-radius: var(--radius-md);
-  font-family: var(--font-ui);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  transition: opacity var(--t-fast);
-}
-.toolbar-perform:hover { opacity: 0.85; }
+
 .toolbar-meta-toggle {
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--hairline);
-  background: var(--bg-elevated);
-  border-radius: var(--radius-md);
-  color: var(--ink-soft);
-  font-size: 14px;
+  color: var(--dim);
 }
-.toolbar-meta-toggle[data-active="1"] {
-  background: var(--accent-tint);
-  color: var(--accent);
-  border-color: var(--accent-soft);
+
+.control-readout {
+  min-width: 26px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--t-ui);
+  font-weight: 500;
+  color: var(--text);
+  font-feature-settings: 'tnum' 1;
+}
+
+.control-readout-num {
+  letter-spacing: 0.02em;
+}
+
+.control-a-small {
+  font-size: var(--t-micro);
+}
+
+.control-a-large {
+  font-size: var(--t-body);
 }
 
 /* ════════════════════════════════════════════════════════════════
-   PREVIEW
+   PREVIEW — the song page
    ════════════════════════════════════════════════════════════════ */
 
 .preview {
+  min-width: 0;
   overflow-y: auto;
-  padding: 36px 48px 80px;
-  background: var(--bg);
+  padding: var(--s-6) var(--s-6) var(--s-7);
 }
+
 .preview-page {
-  max-width: 720px;
-  margin: 0 auto;
+  max-width: 780px;
 }
-.preview-section { margin-bottom: 28px; }
+
+.preview-section {
+  margin-bottom: var(--s-6);
+}
+
 .preview-section-head {
   display: flex;
   align-items: baseline;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
 }
+
+ /* The one eyebrow that is not a quiet label: which verse you are on is
+   the page's own structure, so it carries the accent. */
 .preview-section-tag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--accent);
+  opacity: 0.85;
 }
+
 .preview-section-label {
-  font-family: var(--font-body);
-  font-size: 12px;
-  color: var(--ink-soft);
+  font-size: var(--t-ui);
+  color: var(--dim);
+  font-style: italic;
+}
+
+/* A hairline under the section tag, stopping short: the eye needs the
+   verse boundary, not a full rule across the page. */
+.preview-section-head::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent 70%);
+  transform: translateY(-3px);
 }
 
 .preview-line {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  margin-bottom: 4px;
-  line-height: 1.5;
+  margin-bottom: calc(var(--s-1) * var(--font-scale, 1));
 }
-.preview-line-blank { height: 12px; }
+
+.preview-line-blank {
+  height: calc(14px * var(--font-scale, 1));
+}
+
 .preview-cell {
   display: inline-flex;
   flex-direction: column;
-  align-items: flex-start;
   white-space: pre;
 }
+
 .preview-cell-chord {
-  min-height: calc(20px * var(--font-scale, 1));
-  line-height: 1;
+  height: calc(19px * var(--font-scale, 1));
   font-family: var(--font-mono);
-  font-size: calc(14px * var(--font-scale, 1));
-  color: var(--chord);
+  font-size: calc(var(--t-ui) * var(--font-scale, 1));
   font-weight: 600;
-  letter-spacing: 0.02em;
-  margin-bottom: 2px;
-}
-.preview-cell-lyric {
-  font-family: var(--font-body);
-  font-size: calc(20px * var(--font-scale, 1));
-  color: var(--ink);
-  letter-spacing: -0.005em;
-  line-height: 1.45;
+  letter-spacing: 0.01em;
+  color: var(--accent);
 }
 
-.chord-token {
-  font: inherit;
-  color: inherit;
-  padding: 1px 3px;
-  border-radius: 3px;
-  background: var(--chord-bg);
-  cursor: help;
-  transition: background var(--t-fast), color var(--t-fast);
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-}
-.chord-token:hover {
-  text-decoration-color: var(--chord);
-  background: var(--accent-tint);
+.preview-cell-lyric {
+  font-size: calc(var(--t-lead) * var(--font-scale, 1));
+  line-height: 1.45;
+  color: var(--text);
 }
 
 .preview-empty {
-  color: var(--ink-faint);
-  padding: 60px 0;
-  text-align: center;
+  padding: var(--s-6) 0;
+  font-size: var(--t-body);
+  color: var(--dim);
+}
+
+/* ─── chord token + popover ─── */
+
+.chord-token {
+  padding: var(--s-hair) var(--s-1);
+  margin-left: calc(-1 * var(--s-1));
+  border-radius: var(--radius-sm);
+  font: inherit;
+  color: inherit;
+  transition:
+    background var(--dur-fast),
+    color var(--dur-fast);
+}
+
+.chord-token:hover {
+  background: var(--accent-soft);
+}
+
+.chord-popover {
+  position: fixed;
+  z-index: 80;
+  padding: var(--s-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+  animation: rise 0.16s var(--ease-out);
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -611,40 +581,58 @@
 
 .editor {
   position: relative;
-  border-left: 1px solid var(--hairline);
-  background: var(--bg-sunken);
-  overflow: hidden;
+  min-width: 0;
+  background: var(--panel-deep);
+  border-left: 1px solid var(--line);
 }
+
 .editor-mirror,
 .editor-textarea {
   position: absolute;
   inset: 0;
   margin: 0;
-  padding: 28px 36px 80px;
+  padding: var(--s-5) var(--s-5) var(--s-7);
   font-family: var(--font-mono);
-  font-size: calc(13.5px * var(--font-scale, 1));
+  font-size: var(--t-ui);
   line-height: 1.7;
   white-space: pre-wrap;
   word-break: break-word;
   overflow: auto;
+  tab-size: 2;
 }
+
 .editor-mirror {
   pointer-events: none;
-  color: var(--ink);
-  background: transparent;
+  color: var(--text);
 }
+
 .editor-textarea {
+  resize: none;
   background: transparent;
+  /* The mirror below carries the colour; the real text is invisible but
+     everything else about the textarea (caret, IME, spellcheck, undo)
+     stays native. */
   color: transparent;
   caret-color: var(--accent);
-  resize: none;
-  z-index: 1;
 }
-.editor-textarea::selection { background: var(--accent-tint); color: transparent; }
 
-.hl-directive { color: var(--ink-faint); }
-.hl-chord     { color: var(--accent); font-weight: 500; }
-.hl-comment   { color: var(--ink-faint); opacity: 0.7; }
+.editor-textarea::selection {
+  background: var(--accent-soft);
+}
+
+.hl-directive {
+  color: var(--dim);
+}
+
+.hl-chord {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.hl-comment {
+  color: var(--dim);
+  font-style: italic;
+}
 
 /* ════════════════════════════════════════════════════════════════
    METADATA PANEL
@@ -652,91 +640,175 @@
 
 .meta {
   width: var(--meta-w);
-  border-left: 1px solid var(--hairline);
-  background: var(--bg-panel);
   overflow-y: auto;
-  padding: 24px 22px 60px;
+  padding: var(--s-5) var(--s-5) var(--s-7);
+  background: var(--panel);
+  border-left: 1px solid var(--line);
 }
-.meta-section + .meta-section { margin-top: 28px; }
+
+.meta-section + .meta-section {
+  margin-top: var(--s-5);
+}
+
 .meta-section-title {
-  margin: 0 0 12px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  font-weight: 400;
+  margin: 0 0 var(--s-3);
 }
+
 .meta-field {
-  display: grid;
-  grid-template-columns: 88px 1fr;
-  gap: 12px;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--hairline);
+  display: flex;
   align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--line);
 }
+
 .meta-field-label {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  color: var(--ink-faint);
-  letter-spacing: 0.02em;
+  flex: none;
+  font-size: var(--t-ui);
+  color: var(--dim);
 }
+
 .meta-field-value {
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: var(--ink);
+  min-width: 0;
+  text-align: right;
 }
+
 .meta-value {
   font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--ink);
-  font-feature-settings: "tnum" 1, "zero" 1;
+  font-size: var(--t-ui);
+  color: var(--text);
+  font-feature-settings: 'tnum' 1;
 }
+
 .meta-input {
   width: 100%;
-  padding: 4px 0;
-  font-size: 13px;
-  color: var(--ink);
-  background: transparent;
+  padding: var(--s-1) 0;
+  font-size: var(--t-ui);
+  color: var(--text);
+  text-align: right;
   border-bottom: 1px solid transparent;
+  transition: border-color var(--dur-fast);
 }
-.meta-input:focus { border-bottom-color: var(--accent-soft); }
-.meta-input::placeholder { color: var(--ink-faint); }
+
+.meta-input::placeholder {
+  color: var(--dim);
+}
+
+.meta-input:focus {
+  border-bottom-color: var(--accent-line);
+}
+
+/*
+ * A field whose value is a control rather than a readout — the capo stepper,
+ * the tempo input, the text-size trio. Baseline-aligned rows would leave the
+ * chips floating, so this centres them and keeps the row on the right.
+ */
+.meta-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-1);
+}
+
+.meta-input-num {
+  width: 44px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' 1;
+}
+
+.meta-input-num::-webkit-inner-spin-button {
+  display: none;
+}
+
+.meta-unit {
+  flex: none;
+  font-size: var(--t-ui);
+  color: var(--dim);
+}
+
+.meta-value-num {
+  min-width: 48px;
+  text-align: center;
+}
+
+.meta-value-reset {
+  border-radius: var(--radius-sm);
+  padding: var(--s-1);
+  color: var(--dim);
+  transition:
+    background var(--dur-fast),
+    color var(--dur-fast);
+}
+
+.meta-value-reset:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
 
 .meta-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: var(--s-2);
 }
+
 .meta-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  border: 1px solid var(--hairline);
-  background: var(--bg-elevated);
-  font-family: var(--font-ui);
-  font-size: 11px;
-  color: var(--ink-soft);
+  gap: var(--s-1);
+  padding: var(--s-1) var(--s-2) var(--s-1) var(--s-3);
+  font-size: var(--t-ui);
+  color: var(--text);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-pill);
 }
+
 .meta-tag-remove {
-  color: var(--ink-faint);
-  font-size: 11px;
+  /* No colour of its own: --dim over the tag's amber tint measured 4.47:1,
+     just under AA, and the x is this chip's only control. It inherits the
+     tag's --text and separates itself by the hover instead. */
+  font-size: var(--t-ui);
   line-height: 1;
+  padding: 0 var(--s-hair);
+  border-radius: 50%;
+  transition: color var(--dur-fast);
 }
-.meta-tag-remove:hover { color: var(--accent); }
-.meta-tag-add input { padding: 6px 10px; border: 1px dashed var(--hairline); border-radius: 999px; background: transparent; width: 100%; font-size: 12px; }
+
+.meta-tag-remove:hover {
+  color: var(--accent);
+}
+
+.meta-tag-add {
+  margin-top: var(--s-2);
+}
+
+.meta-tag-add input {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--t-ui);
+  text-align: left;
+  color: var(--text);
+  background: transparent;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-pill);
+}
+
+.meta-tag-add input:focus {
+  border-style: solid;
+  border-color: var(--accent-line);
+}
 
 .meta-chord-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: var(--s-3);
 }
+
 .meta-empty {
-  font-size: 12px;
-  color: var(--ink-faint);
+  font-size: var(--t-ui);
+  color: var(--dim);
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -747,211 +819,171 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 6px 4px;
-  background: var(--bg-elevated);
-  border-radius: var(--radius-md);
+  gap: var(--s-1);
+  color: var(--text);
 }
-.chord-diagram-sm  { font-size: 11px; }
-.chord-diagram-md  { font-size: 13px; }
-.chord-diagram-lg  { font-size: 16px; }
+
+.chord-diagram-sm {
+  font-size: var(--t-ui);
+}
+
+.chord-diagram-md {
+  font-size: var(--t-body);
+}
+
+.chord-diagram-lg {
+  font-size: var(--t-lead);
+}
+
 .chord-diagram-name {
   font-family: var(--font-mono);
   font-weight: 600;
-  color: var(--ink);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  color: var(--accent);
 }
-.chord-diagram-missing { color: var(--ink-faint); }
-.chord-diagram-hint   { font-style: italic; font-size: 10px; }
+
+.chord-diagram-missing {
+  color: var(--dim);
+}
+
+.chord-diagram-hint {
+  font-size: var(--t-micro);
+  font-style: italic;
+}
 
 .chord-diagram-svg {
   width: 84px;
   height: 100px;
   overflow: visible;
 }
-.chord-diagram-sm .chord-diagram-svg { width: 64px; height: 76px; }
-.chord-diagram-lg .chord-diagram-svg { width: 110px; height: 130px; }
+
+.chord-diagram-sm .chord-diagram-svg {
+  width: 64px;
+  height: 76px;
+}
+
+.chord-diagram-lg .chord-diagram-svg {
+  width: 110px;
+  height: 130px;
+}
 
 .chord-diagram-fret,
 .chord-diagram-string {
   stroke: var(--diagram-string);
   stroke-width: var(--diagram-strokew);
-  fill: none;
+  stroke-linecap: round;
 }
-.chord-diagram-fret { stroke: var(--diagram-fret); }
-.chord-diagram-nut  { fill: var(--diagram-nut); }
-.chord-diagram-dot  { fill: var(--diagram-dot); }
+
+.chord-diagram-fret {
+  stroke: var(--diagram-fret);
+}
+
+.chord-diagram-nut {
+  fill: var(--diagram-nut);
+}
+
+.chord-diagram-dot {
+  fill: var(--diagram-dot);
+}
+
 .chord-diagram-finger {
-  fill: var(--diagram-dot-text);
   font-family: var(--font-mono);
-  font-size: 7px;
-  font-weight: 600;
+  font-size: var(--t-glyph);
+  font-weight: 700;
+  fill: var(--diagram-dot-text);
 }
+
 .chord-diagram-open {
   fill: none;
   stroke: var(--diagram-open);
   stroke-width: var(--diagram-strokew);
 }
+
 .chord-diagram-mute {
   stroke: var(--diagram-mute);
-  stroke-width: calc(var(--diagram-strokew) * 1.2);
+  stroke-width: var(--diagram-strokew);
   stroke-linecap: round;
 }
-.chord-diagram-barre { fill: var(--diagram-barre); opacity: 0.85; }
-.chord-diagram-fretnum {
-  font-family: var(--font-mono);
-  font-size: 8px;
-  fill: var(--ink-faint);
+
+.chord-diagram-barre {
+  fill: var(--diagram-barre);
+  opacity: 0.85;
 }
 
-.chord-popover {
-  position: fixed;
-  z-index: 1000;
-  padding: 8px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-pop);
-  animation: popover-in 160ms var(--ease-out);
-}
-@keyframes popover-in {
-  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+.chord-diagram-fretnum {
+  font-family: var(--font-mono);
+  font-size: var(--t-glyph);
+  fill: var(--faint);
 }
 
 /* ════════════════════════════════════════════════════════════════
-   PLAYER (footer transport)
+   PLAYER — footer transport
    ════════════════════════════════════════════════════════════════ */
 
 .player {
-  display: grid;
-  grid-template-columns: auto auto auto 1fr auto;
+  display: flex;
   align-items: center;
-  gap: 14px;
-  height: var(--player-h);
-  padding: 0 24px;
-  border-top: 1px solid var(--hairline);
-  background: var(--bg-elevated);
+  gap: var(--s-3);
+  padding: 0 var(--s-4);
+  background: var(--footer-fill);
+  border-top: 1px solid var(--line);
 }
 
 .player-helper-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 10px 0 8px;
-  font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--ink-soft);
-  background: transparent;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+  color: var(--dim);
 }
-.player-helper-toggle:hover {
-  color: var(--ink);
-  border-color: var(--ink-line);
-  background: var(--bg-panel);
+
+.player-helper-caret {
+  font-size: var(--t-micro);
+  opacity: 0.7;
 }
-.player-helper-toggle[data-active="1"] {
-  background: var(--ink);
-  color: var(--bg-elevated);
-  border-color: var(--ink);
-}
-.player-helper-toggle-caret {
-  font-size: 9px;
-  opacity: 0.75;
-}
-.theme-studio .player-helper-toggle-label {
-  letter-spacing: 0.08em;
-}
-.player-mode {
-  display: inline-flex;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-md);
-  padding: 2px;
-}
-.player-mode-btn {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  color: var(--ink-soft);
-}
-.player-mode-btn[data-active="1"] {
-  background: var(--ink);
-  color: var(--bg-elevated);
-}
+
 .player-play {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: 1px solid var(--ink-line);
-  background: var(--bg-elevated);
-  color: var(--ink);
-  font-size: 13px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform var(--t-fast), background var(--t-fast), color var(--t-fast);
+  flex: none;
+  color: var(--text);
+  border-color: var(--line-strong);
 }
+
 .player-play:hover {
-  background: var(--ink);
-  color: var(--bg-elevated);
+  color: var(--accent);
+  border-color: var(--accent-line);
 }
+
 .player-track {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 0;
+  gap: var(--s-3);
 }
+
 .player-time {
+  flex: none;
+  min-width: 38px;
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--ink-faint);
-  font-feature-settings: "tnum" 1, "zero" 1;
-  min-width: 36px;
+  font-size: var(--t-micro);
+  color: var(--dim);
+  font-feature-settings: 'tnum' 1;
 }
+
+.player-time:last-of-type {
+  text-align: right;
+}
+
+/* Track, thumb and the --p fill are the kit's `.slider.seek`; only the
+   width is this layout's business. */
 .player-scrubber {
   flex: 1;
-  appearance: none;
-  height: 2px;
-  background: var(--hairline);
-  border-radius: 999px;
+  min-width: 0;
 }
-.player-scrubber::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: var(--accent);
-  border: 2px solid var(--bg-elevated);
-}
+
 .player-tempo {
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--ink-soft);
-  font-feature-settings: "tnum" 1, "zero" 1;
+  font-size: var(--t-ui);
+  color: var(--dim);
+  letter-spacing: 0.02em;
+  font-feature-settings: 'tnum' 1;
 }
-.player-load {
-  font-family: var(--font-ui);
-  font-size: 12px;
-  color: var(--ink-soft);
-  padding: 6px 10px;
-  border: 1px dashed var(--hairline);
-  border-radius: var(--radius-md);
-}
-.player-load:hover { color: var(--accent); border-color: var(--accent-soft); }
-.player-eject {
-  color: var(--ink-faint);
-  padding: 4px 6px;
-  border-radius: var(--radius-sm);
-}
-.player-eject:hover { color: var(--accent); }
 
 /* ════════════════════════════════════════════════════════════════
    PERFORMANCE OVERLAY
@@ -960,658 +992,346 @@
 .perf-overlay {
   position: fixed;
   inset: 0;
-  z-index: 2000;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
-  background-image: var(--paper-grain, none);
-  background-size: 240px 240px;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  animation: perf-in 240ms var(--ease-out);
+  animation: fade 0.18s;
 }
-@keyframes perf-in {
-  from { opacity: 0; transform: scale(0.985); }
-  to   { opacity: 1; transform: scale(1); }
-}
+
 .perf-overlay-bar {
+  flex: none;
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 28px;
-  border-bottom: 1px solid var(--hairline);
+  gap: var(--s-4);
+  padding: 0 var(--s-5);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-deep);
 }
+
 .perf-overlay-title {
-  font-family: var(--font-display);
-  font-size: 22px;
+  font-size: var(--t-body);
+  font-weight: 700;
   letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
 .perf-overlay-controls {
-  display: inline-flex;
+  flex: none;
+  display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--s-3);
 }
-.perf-overlay-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: 1px solid var(--hairline);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink-soft);
-}
-.perf-overlay-btn:hover { color: var(--accent); border-color: var(--accent-soft); }
+
 .perf-overlay-speed {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
+  gap: var(--s-2);
 }
+
 .perf-overlay-speed input {
   width: 120px;
-  appearance: none;
-  height: 2px;
-  background: var(--hairline);
 }
-.perf-overlay-speed input::-webkit-slider-thumb {
-  appearance: none;
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--accent);
+
+.perf-overlay-close:hover {
+  color: var(--danger);
+  border-color: var(--danger);
 }
+
 .perf-overlay-scroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
 }
+
 .perf-overlay-scroll .preview {
-  font-size: 21px;
-}
-.perf-overlay-scroll .preview-cell-lyric { font-size: calc(22px * var(--font-scale, 1)); }
-.perf-overlay-scroll .preview-cell-chord { font-size: calc(14px * var(--font-scale, 1)); }
-
-/* ════════════════════════════════════════════════════════════════
-   THEME-SPECIFIC FLOURISHES
-   ════════════════════════════════════════════════════════════════ */
-
-/* ─── ATELIER (warm paper, handwritten flourishes) ─────────────── */
-
-.theme-atelier .toolbar-title {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-}
-.theme-atelier .preview-section + .preview-section::before {
-  content: "";
-  display: block;
-  height: 1px;
-  background: var(--hairline);
-  margin: 18px 0 14px;
-  max-width: 240px;
-}
-.theme-atelier .preview-cell-lyric {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: calc(22px * var(--font-scale, 1));
-  font-weight: 400;
-}
-.theme-atelier .preview-cell-chord {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 600;
-  text-transform: none;
-  font-size: calc(15px * var(--font-scale, 1));
-}
-.theme-atelier .sidebar-item-title {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 500;
-  font-size: 13.5px;
-}
-.theme-atelier .toolbar-perform {
-  border-radius: var(--radius-md);
-  background: var(--ink);
-}
-.theme-atelier .workspace-empty-mark {
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 300;
-  color: var(--accent-soft);
+  overflow: visible;
+  padding: var(--s-6) var(--s-7);
 }
 
-/* ─── STUDIO (cool editorial, hairline grid, mono numerics) ───── */
+.perf-overlay-scroll .preview-page {
+  max-width: 920px;
+  margin: 0 auto;
+}
 
-.theme-studio {
-  font-feature-settings: "ss01" 1, "kern" 1;
+/* On a stand, at a distance: everything grows, and the chord grows more
+   than the lyric because it is what you glance at mid-bar. */
+.perf-overlay-scroll .preview-cell-lyric {
+  font-size: calc(var(--t-display) * var(--font-scale, 1));
 }
-.theme-studio .toolbar {
-  border-bottom-width: 1px;
-  padding-top: 24px;
-  padding-bottom: 18px;
-}
-.theme-studio .toolbar-title {
-  font-family: 'Geist', sans-serif;
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: -0.022em;
-  line-height: 1.1;
-}
-.theme-studio .toolbar-subtitle {
-  font-family: 'Geist', sans-serif;
-  font-style: normal;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.20em;
-  color: var(--ink-faint);
-}
-.theme-studio .toolbar-controls {
-  border-radius: var(--radius-sm);
-}
-.theme-studio .preview-cell-lyric {
-  font-family: 'Geist', sans-serif;
-  font-size: calc(20px * var(--font-scale, 1));
-  font-weight: 400;
-  letter-spacing: -0.005em;
-}
-.theme-studio .preview-cell-chord {
-  font-family: 'Geist Mono', monospace;
-  font-feature-settings: "tnum" 1, "zero" 1, "ss01" 1;
-  font-size: calc(14px * var(--font-scale, 1));
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.theme-studio .sidebar {
-  background: var(--bg-spine);
-}
-.theme-studio .sidebar-item-title {
-  font-family: 'Geist', sans-serif;
-  font-weight: 500;
-  font-size: 13px;
-  letter-spacing: -0.005em;
-}
-.theme-studio .sidebar-item[data-active="1"] {
-  box-shadow: inset 0 0 0 1px var(--ink-line);
-}
-.theme-studio .preview-section::before {
-  content: "";
-  display: block;
-  height: 1px;
-  width: 100%;
-  background: var(--hairline);
-  margin: 18px 0 16px;
-}
-.theme-studio .preview-section:first-child::before { display: none; }
-.theme-studio .chord-token {
-  text-decoration: none;
-  border-bottom: 1px solid var(--hairline);
-  border-radius: 0;
-}
-.theme-studio .chord-token:hover {
-  border-bottom-color: var(--ink);
-  background: transparent;
-}
-.theme-studio .meta-field { border-bottom-style: dashed; }
-.theme-studio .meta-tag {
-  border-radius: 2px;
-  font-family: 'Geist Mono', monospace;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.theme-studio .toolbar-perform {
-  border-radius: 2px;
-  font-family: 'Geist Mono', monospace;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  padding: 8px 14px;
-}
-.theme-studio .workspace-empty-mark {
-  font-family: 'Geist', sans-serif;
-  font-weight: 300;
-}
-.theme-studio .control-readout,
-.theme-studio .control-input,
-.theme-studio .meta-value,
-.theme-studio .player-time,
-.theme-studio .player-tempo {
-  font-family: 'Geist Mono', monospace;
-}
-.theme-studio .chord-diagram-name {
-  font-family: 'Geist Mono', monospace;
-  text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 0.10em;
-}
-.theme-studio .chord-diagram {
-  background: transparent;
-  border: 1px solid var(--hairline);
-  border-radius: 0;
-}
-.theme-studio .player {
-  border-top-width: 1px;
-}
-.theme-studio .titlebar-wordmark {
-  font-family: 'Geist', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-}
-.theme-studio .titlebar-wordmark-glyph {
-  font-style: normal;
+
+.perf-overlay-scroll .preview-cell-chord {
+  height: calc(24px * var(--font-scale, 1));
+  font-size: calc(var(--t-body) * var(--font-scale, 1));
 }
 
 /* ════════════════════════════════════════════════════════════════
-   SCROLLBARS
-   ════════════════════════════════════════════════════════════════ */
-
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: var(--hairline);
-  border-radius: 999px;
-  border: 2px solid var(--bg);
-}
-::-webkit-scrollbar-thumb:hover { background: var(--ink-line); }
-
-/* ════════════════════════════════════════════════════════════════
-   GUITAR HELPER (toggleable bottom panel)
+   GUITAR HELPER — the toggleable bottom panel
    ════════════════════════════════════════════════════════════════ */
 
 .guitar-helper {
-  /* shim: helper components reference --text, --border, etc.; resolve them to
-     ChordZ tokens so the panel inherits theme + dark mode. */
-  --text:        var(--ink);
-  --text-mute:   var(--ink-soft);
-  --text-dim:    var(--ink-faint);
-  --border:      var(--hairline);
-  --border-2:    var(--ink-line);
-  --surface:     var(--bg-panel);
-  --surface-2:   var(--bg-elevated);
-  --fb-board-top: #1e2533;
-  --fb-board-bot: #141923;
-
-  display: grid;
-  grid-template-rows: auto auto 1fr;
-  height: 320px;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
-  background: var(--bg-panel);
-  border-top: 1px solid var(--hairline);
-  color: var(--ink);
-  overflow: hidden;
-}
-
-/* When the fretboard is hidden, FretboardControls aren't rendered either —
-   collapse the grid to just header + body and let the panel size to its
-   content (a thin strip when chords are off, a chord-grid block when on)
-   instead of leaving 320px of dead space. */
-.guitar-helper:has(.guitar-helper-body[data-fretboard="0"]) {
-  grid-template-rows: auto auto;
-  height: auto;
-  max-height: 60vh;
+  height: 46vh;
+  max-height: 520px;
+  background: var(--panel);
+  border-top: 1px solid var(--line-strong);
+  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.35);
+  animation: rise 0.22s var(--ease-out);
 }
 
 .guitar-helper-head {
+  flex: none;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--hairline);
-  background: var(--bg-elevated);
-  font-family: var(--font-display);
-  font-size: 12.5px;
-  white-space: nowrap;
+  gap: var(--s-3);
+  padding: 0 var(--s-4) 0 var(--s-4);
+  height: 42px;
+  border-bottom: 1px solid var(--line);
 }
-.guitar-helper-head .gh-title {
-  font-weight: 600;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.guitar-helper-head .gh-summary {
-  display: inline-flex;
+
+.gh-summary {
+  display: flex;
   align-items: baseline;
-  gap: 6px;
-  color: var(--ink-soft);
+  gap: var(--s-2);
+  font-size: var(--t-ui);
+  color: var(--dim);
 }
-.guitar-helper-head .gh-summary strong {
-  font-weight: 600;
-  color: var(--ink);
-}
-.guitar-helper-head .gh-summary-sep { color: var(--ink-faint); }
-.guitar-helper-head .gh-summary-box {
+
+.gh-summary strong {
+  font-size: var(--t-body);
+  font-weight: 700;
   color: var(--accent);
-  font-size: 11.5px;
 }
-.guitar-helper-head .gh-tuning {
+
+.gh-summary-scale {
+  color: var(--text);
+}
+
+.gh-summary-sep {
+  /* Incidental text: a separator between two words that the layout already
+     separates. It carries nothing to read, so it may sit below AA. */
+  color: var(--faint);
+}
+
+.gh-summary-box {
+  font-size: var(--t-ui);
+  color: var(--dim);
+}
+
+.gh-tuning {
   margin-left: auto;
-  font-size: 10.5px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-.guitar-helper-head .gh-close {
-  appearance: none;
-  background: transparent;
-  border: 1px solid var(--hairline);
-  border-radius: 4px;
-  width: 22px;
-  height: 22px;
-  font-size: 16px;
-  line-height: 1;
-  color: var(--ink-soft);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.guitar-helper-head .gh-close:hover {
-  color: var(--ink);
-  border-color: var(--ink-line);
+  font-size: var(--t-micro);
+  letter-spacing: 0.22em;
+  color: var(--dim);
 }
 
-/* Left tool rail inside the panel — Obsidian-style vertical icon strip */
-.gh-rail {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 2px;
-  padding: 8px 4px;
-  background: var(--bg-spine);
-  border-right: 1px solid var(--hairline);
-  min-width: 0;
-}
-.gh-rail-btn {
-  appearance: none;
-  position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  width: 56px;
-  padding: 8px 4px;
-  font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--ink-soft);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
-}
-.gh-rail-btn:hover {
-  background: var(--bg-elevated);
-  color: var(--ink);
-}
-.gh-rail-btn[data-active="1"] {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.gh-rail-btn[data-active="1"] .gh-rail-badge {
-  background: var(--accent);
-  color: var(--bg);
-}
-.gh-rail-label {
-  font-size: 9.5px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.gh-rail-badge {
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  min-width: 14px;
-  height: 13px;
-  padding: 0 3px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 600;
-  border-radius: 7px;
-  background: var(--hairline);
-  color: var(--ink-soft);
+.gh-close {
+  flex: none;
+  width: 26px;
+  height: 26px;
 }
 
-/* Controls row */
-.guitar-helper .gh-controls {
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--hairline);
-  background: var(--bg-panel);
+/* ─── controls row ─── */
+
+.gh-controls {
+  flex: none;
+  padding: var(--s-2) var(--s-4);
+  border-bottom: 1px solid var(--line);
 }
-.guitar-helper .gh-row {
+
+/* Wraps rather than scrolls: a hidden Tones group is a hidden answer to
+   "which notes am I allowed to play", which is the whole point of the row. */
+.gh-row {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-3);
+}
+
+.gh-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.gh-chip-row {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 14px;
+  gap: var(--s-1);
 }
-.guitar-helper .gh-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.guitar-helper .gh-group-label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  white-space: nowrap;
-}
-.guitar-helper .gh-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
-}
-.guitar-helper .gh-divider {
-  display: inline-block;
-  align-self: stretch;
+
+.gh-divider {
+  flex: none;
   width: 1px;
-  background: var(--hairline);
-  margin: 2px 0;
-}
-@media (max-width: 900px) {
-  .guitar-helper .gh-divider-tones,
-  .guitar-helper .gh-group-tones { display: none; }
+  align-self: stretch;
+  background: var(--line);
 }
 
-/* Chip — namespaced under .guitar-helper so it doesn't collide with toolbar */
-.guitar-helper .chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 24px;
-  min-width: 24px;
-  padding: 0 7px;
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1;
-  color: var(--ink);
-  background: var(--bg-elevated);
-  border: 1px solid var(--hairline);
-  border-radius: 4px;
-  cursor: pointer;
-  user-select: none;
-  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
-  white-space: nowrap;
-}
-.guitar-helper .chip:hover {
-  background: var(--bg-sunken);
-  border-color: var(--ink-line);
-}
-.guitar-helper .chip[data-active="true"] {
-  background: var(--accent);
-  color: var(--bg);
-  border-color: var(--accent);
-}
-.guitar-helper .chip[data-tone="neutral"][data-active="true"] {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
+.gh-group-tones {
+  margin-left: auto;
 }
 
-.guitar-helper .segmented {
-  display: inline-flex;
-  background: var(--bg-elevated);
-  border: 1px solid var(--hairline);
-  border-radius: 5px;
-  overflow: hidden;
-  padding: 1px;
-  gap: 1px;
-}
-.guitar-helper .segmented .chip {
-  border: 0;
-  border-radius: 3px;
-  height: 20px;
-  background: transparent;
-}
-.guitar-helper .segmented .chip:hover {
-  background: var(--bg-sunken);
-}
-.guitar-helper .segmented .chip[data-active="true"] {
-  background: var(--ink);
-  color: var(--bg);
+/* Once the row has wrapped, pinning Tones right just strands it. */
+@media (max-width: 1500px) {
+  .gh-group-tones {
+    margin-left: 0;
+  }
+
+  .gh-divider-tones {
+    display: none;
+  }
 }
 
-.guitar-helper .tone {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 20px;
-  padding: 0 6px;
-  font-size: 11.5px;
-  font-weight: 500;
-  background: var(--bg-elevated);
-  border: 1px solid var(--hairline);
-  border-radius: 3px;
-  color: var(--ink);
-}
-.guitar-helper .tone .deg {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  color: var(--ink-faint);
-}
-.guitar-helper .tone[data-role="root"] {
-  background: rgba(239, 74, 74, 0.14);
-  color: #b62929;
-  border-color: rgba(239, 74, 74, 0.35);
-}
-.guitar-helper .tone[data-role="root"] .deg { color: #b62929; }
-.guitar-helper .tone[data-role="blues"] {
-  background: rgba(122, 65, 198, 0.14);
-  color: #6c30b3;
-  border-color: rgba(122, 65, 198, 0.35);
-}
-.guitar-helper .tone[data-role="blues"] .deg { color: #6c30b3; }
-
-.guitar-helper .mono { font-family: var(--font-mono); }
-
-/* Dark mode tone chips need higher-contrast text */
-[data-dark="1"] .guitar-helper .tone[data-role="root"] {
-  color: #ffb3b3;
-  border-color: rgba(239, 74, 74, 0.45);
-}
-[data-dark="1"] .guitar-helper .tone[data-role="root"] .deg { color: #ff8a8a; }
-[data-dark="1"] .guitar-helper .tone[data-role="blues"] {
-  color: #d9bdff;
-  border-color: rgba(176, 115, 245, 0.45);
-}
-[data-dark="1"] .guitar-helper .tone[data-role="blues"] .deg { color: #c39cff; }
-
-/* Body: tool rail | fretboard | chord drawer */
-.guitar-helper-body {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: auto 1fr 260px;
-  gap: 0;
-  overflow: hidden;
-}
-.guitar-helper-body[data-fretboard="0"][data-chords="1"] {
-  grid-template-columns: auto 1fr;
-}
-.guitar-helper-body[data-fretboard="1"][data-chords="0"] {
-  grid-template-columns: auto 1fr;
-}
-.guitar-helper-body[data-fretboard="0"][data-chords="0"] {
-  grid-template-columns: auto 1fr;
-}
-
-/* Right chord-palette drawer */
-.guitar-helper-chords {
-  min-width: 0;
+/* A scale tone, read as a pair: degree above, note below. */
+.tone {
   display: flex;
   flex-direction: column;
-  border-left: 1px solid var(--hairline);
-  background: var(--bg-elevated);
-  overflow: hidden;
+  align-items: center;
+  min-width: 26px;
+  padding: var(--s-hair) var(--s-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--dim);
 }
-.guitar-helper-body[data-fretboard="0"] .guitar-helper-chords {
-  border-left: 0;
+
+.tone .deg {
+  font-size: var(--t-glyph);
+  color: var(--dim);
 }
-.gh-chords-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--hairline);
-  font-family: var(--font-display);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+
+.tone[data-role='root'] {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
-.gh-chords-title { font-weight: 600; }
-.gh-chords-count { color: var(--ink-faint); font-size: 10.5px; }
-.gh-chords-grid {
-  padding: 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: 10px;
-  overflow-y: auto;
-  align-content: start;
-  scrollbar-width: thin;
+
+.tone[data-role='root'] .deg {
+  color: var(--accent);
+  opacity: 0.75;
+}
+
+.tone[data-role='blues'] {
+  border-color: var(--tone-blues-line);
+  color: var(--tone-blues);
+}
+
+.tone[data-role='blues'] .deg {
+  color: var(--tone-blues);
+  opacity: 0.75;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* Two columns: the board, and the shapes for this song beside it. The left
+   rail that used to flank them is gone — it existed only to hide the two
+   halves of a helper you had just chosen to open. */
+.guitar-helper-body {
   flex: 1;
   min-height: 0;
-}
-.gh-chords-empty {
-  padding: 16px;
-  font-size: 12px;
-  color: var(--ink-faint);
-  text-align: center;
-  font-style: normal;
+  display: flex;
 }
 
-.gh-empty-state {
+.guitar-helper-chords {
+  flex: none;
+  order: 2;
+  width: 232px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--s-3);
+  border-left: 1px solid var(--line);
+  background: var(--panel-deep);
+}
+
+.gh-chords-head {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 24px;
-  color: var(--ink-faint);
-  font-size: 12.5px;
-  text-align: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
 }
 
-/* Fretboard host: scrollable area filling the remaining helper height */
-.guitar-helper-board {
-  min-height: 0;
-  padding: 8px 10px 10px;
-  display: flex;
-  overflow: hidden;
+.gh-chords-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: var(--s-3);
 }
+
+.gh-chords-empty {
+  font-size: var(--t-ui);
+  color: var(--dim);
+}
+
+.guitar-helper-board {
+  flex: 1;
+  order: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--s-2) 0 var(--s-2) var(--s-3);
+}
+
 .fretboard-host {
   width: 100%;
   height: 100%;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+.fretboard-svg {
+  display: block;
+  user-select: none;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TOAST — the kit ships the surface, the app arranges it
+   ════════════════════════════════════════════════════════════════ */
+
+/*
+ * .toast itself is the kit's: fixed, centred, danger-surface, its own
+ * entrance. All that is added here is the row inside it, because the kit's
+ * class is a surface and has no opinion about what you put on it.
+ */
+.toast {
   display: flex;
   align-items: center;
-  scrollbar-width: thin;
+  gap: var(--s-3);
 }
-.fretboard-svg { display: block; user-select: none; }
+
+.toast-message {
+  min-width: 0;
+}
+
+.toast-dismiss {
+  flex: none;
+  color: inherit;
+}
+
+/* Keep the title and reading controls reachable in smaller app windows. */
+@media (max-width: 1250px) {
+  .toolbar {
+    height: auto;
+    min-height: 56px;
+    flex-wrap: wrap;
+    padding: var(--s-3);
+    gap: var(--s-2);
+  }
+  .toolbar-titleblock { width: 100%; flex-wrap: wrap; }
+  .toolbar-facts { flex: 0 1 auto; min-width: 0; }
+  .toolbar-actions { flex-wrap: wrap; max-width: 100%; }
+}
+@media (max-width: 700px) {
+  :root { --sidebar-w: 160px; }
+  .toolbar-titleblock { display: block; }
+  .toolbar-facts { white-space: normal; }
+  .sidebar-item-meta { display: none; }
+  .player { overflow-x: auto; }
+}

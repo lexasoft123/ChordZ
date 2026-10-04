@@ -24,7 +24,7 @@ npm run electron:build
 
 ## Shared UI
 
-ChordZ uses `@singz/ui` 1.8.2 from [singz-ui](https://github.com/lexasoft123/singz-ui). Shared buttons, segmented controls, focus styles and palette tokens come from the kit. Atelier uses the paper palette; Studio uses night studio. Dark Atelier uses night studio, and Compare displays both layouts.
+ChordZ uses `@singz/ui` 1.8.2 from [singz-ui](https://github.com/lexasoft123/singz-ui). Shared buttons, chips, dialogs, segmented controls, window controls, focus styles and palette tokens come from the kit. The palette toggle switches between Atelier paper and night studio; the first launch follows the system appearance. The redesigned shell includes keyboard-accessible library actions, save/error feedback, and guitar chord diagrams. Fonts are bundled through Fontsource.
 
 The package is checked in as `vendor/singz-ui-1.8.2.tgz`, so a fresh clone does not need `../singz-ui`, a private registry or a mutable remote branch. See [vendor/README.md](vendor/README.md) for provenance and updates. App layout and music-specific diagrams remain in `src/styles` and `src/components`.
 

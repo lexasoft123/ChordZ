@@ -1,6 +1,7 @@
-import { Button } from '@singz/ui'
 import { useState } from 'react'
+import { Button } from '@singz/ui'
 import type { Song } from '../lib/chordpro'
+import type { SaveState } from '../App'
 import { serializeChordPro } from '../lib/chordpro'
 import Sidebar from './Sidebar'
 import Toolbar from './Toolbar'
@@ -15,7 +16,9 @@ import { rootToPitchClass, type PitchClass } from '../lib/scales'
 export type Mode = 'preview' | 'edit' | 'split'
 
 export interface WorkspaceProps {
-  themeKey: 'atelier' | 'studio'
+  hydrating: boolean
+  saveState: SaveState
+  onError: (message: string) => void
   songs: Song[]
   selectedSong: Song | null
   displaySong: Song | null
@@ -28,14 +31,12 @@ export interface WorkspaceProps {
   onDeleteSong: (id: string) => void
   preferFlats: boolean
   onPreferFlatsChange: (v: boolean) => void
-  dark: boolean
-  onDarkChange: (v: boolean) => void
   fontScale: number
   onFontScaleChange: (n: number) => void
   showHelper: boolean
   onShowHelperChange: (v: boolean) => void
-  /** When true, hide sidebar + metadata so the pane shows only the song surface. Used by Compare. */
-  compact?: boolean
+  metaOpen: boolean
+  onMetaOpenChange: (v: boolean) => void
 }
 
 function songRootPc(song: { meta: { key?: string } } | null): PitchClass | undefined {
@@ -55,29 +56,40 @@ export default function Workspace(props: WorkspaceProps) {
   const [mode, setMode] = useState<Mode>('preview')
   const [performance, setPerformance] = useState(false)
   const [scrollSpeed, setScrollSpeed] = useState(20) // px/sec
-  const [metaOpen, setMetaOpen] = useState(!props.compact)
 
   const { selectedSong, displaySong } = props
 
+  // Every field the details panel edits goes back the same way.
+  const patchMeta = (patch: Partial<Song['meta']>) => {
+    if (!selectedSong) return
+    props.onUpdateSong({ ...selectedSong, meta: { ...selectedSong.meta, ...patch } })
+  }
+
   return (
     <div
-      className={`workspace theme-${props.themeKey}`}
-      data-compact={props.compact ? '1' : '0'}
-      data-dark={props.dark ? '1' : '0'}
+      className="workspace"
       style={{ ['--font-scale' as string]: props.fontScale }}
     >
-      {!props.compact && (
-        <Sidebar
-          songs={props.songs}
-          selectedId={selectedSong?.id ?? null}
-          onSelect={props.onSelectSong}
-          onNew={props.onNewSong}
-          onDelete={props.onDeleteSong}
-          themeKey={props.themeKey}
-        />
-      )}
+      <Sidebar
+        songs={props.songs}
+        selectedId={selectedSong?.id ?? null}
+        onSelect={props.onSelectSong}
+        onNew={props.onNewSong}
+        onDelete={props.onDeleteSong}
+        hydrating={props.hydrating}
+        saveState={props.saveState}
+      />
       <main className="workspace-main">
-        {displaySong ? (
+        {props.hydrating ? (
+          <div className="workspace-empty">
+            <div className="workspace-empty-inner">
+              {/* A line, not a spinner: a local read settles in about 20ms and
+                  a spinner for that is theatre. It is here so the app never
+                  shows a song that is not yours while it waits. */}
+              <div className="eyebrow">Loading library…</div>
+            </div>
+          </div>
+        ) : displaySong ? (
           <>
             <Toolbar
               song={displaySong}
@@ -87,63 +99,31 @@ export default function Workspace(props: WorkspaceProps) {
               onTransposeChange={props.onTransposeChange}
               preferFlats={props.preferFlats}
               onPreferFlatsChange={props.onPreferFlatsChange}
-              metaOpen={metaOpen}
-              onMetaToggle={() => setMetaOpen((v) => !v)}
+              metaOpen={props.metaOpen}
+              onMetaToggle={() => props.onMetaOpenChange(!props.metaOpen)}
               onPerform={() => setPerformance(true)}
-              onCapoChange={(capo) => {
-                if (!selectedSong) return
-                props.onUpdateSong({
-                  ...selectedSong,
-                  meta: { ...selectedSong.meta, capo },
-                })
-              }}
-              onTempoChange={(tempo) => {
-                if (!selectedSong) return
-                props.onUpdateSong({
-                  ...selectedSong,
-                  meta: { ...selectedSong.meta, tempo },
-                })
-              }}
-              fontScale={props.fontScale}
-              onFontScaleChange={props.onFontScaleChange}
-              showHelper={props.showHelper}
-              onShowHelperChange={props.onShowHelperChange}
-              showHelperToggle={!props.compact}
-              themeKey={props.themeKey}
             />
             <div className={`workspace-body mode-${mode}`}>
-              {(mode === 'preview' || mode === 'split') && (
-                <Preview song={displaySong} themeKey={props.themeKey} />
-              )}
+              {(mode === 'preview' || mode === 'split') && <Preview song={displaySong} />}
               {(mode === 'edit' || mode === 'split') && selectedSong && (
                 <Editor
                   source={serializeChordPro(selectedSong)}
                   onChange={(src) => props.onUpdateSongSource(selectedSong.id, src)}
-                  themeKey={props.themeKey}
                 />
               )}
-              {metaOpen && !props.compact && (
+              {props.metaOpen && (
                 <MetadataPanel
                   song={displaySong}
-                  themeKey={props.themeKey}
-                  onTagsChange={(tags) => {
-                    if (!selectedSong) return
-                    props.onUpdateSong({
-                      ...selectedSong,
-                      meta: { ...selectedSong.meta, tags },
-                    })
-                  }}
-                  onArtistChange={(artist) => {
-                    if (!selectedSong) return
-                    props.onUpdateSong({
-                      ...selectedSong,
-                      meta: { ...selectedSong.meta, artist },
-                    })
-                  }}
+                  onTagsChange={(tags) => patchMeta({ tags })}
+                  onArtistChange={(artist) => patchMeta({ artist })}
+                  onTempoChange={(tempo) => patchMeta({ tempo })}
+                  onCapoChange={(capo) => patchMeta({ capo })}
+                  fontScale={props.fontScale}
+                  onFontScaleChange={props.onFontScaleChange}
                 />
               )}
             </div>
-            {props.showHelper && !props.compact && (
+            {props.showHelper && (
               <GuitarHelper
                 key={selectedSong?.id ?? 'no-song'}
                 song={displaySong}
@@ -158,9 +138,9 @@ export default function Workspace(props: WorkspaceProps) {
             )}
             <Player
               song={displaySong}
-              themeKey={props.themeKey}
-              showHelper={!props.compact ? props.showHelper : undefined}
-              onShowHelperChange={!props.compact ? props.onShowHelperChange : undefined}
+              showHelper={props.showHelper}
+              onShowHelperChange={props.onShowHelperChange}
+              onError={props.onError}
             />
             {performance && (
               <PerformanceOverlay
@@ -168,16 +148,15 @@ export default function Workspace(props: WorkspaceProps) {
                 onClose={() => setPerformance(false)}
                 scrollSpeed={scrollSpeed}
                 onScrollSpeedChange={setScrollSpeed}
-                themeKey={props.themeKey}
               />
             )}
           </>
         ) : (
           <div className="workspace-empty">
             <div className="workspace-empty-inner">
-              <div className="workspace-empty-mark">∅</div>
+              <div className="workspace-empty-mark">♪</div>
               <div className="workspace-empty-title">No song selected</div>
-              <Button size="sm" className="workspace-empty-btn" onClick={props.onNewSong}>
+              <Button variant="primary" onClick={props.onNewSong}>
                 New song
               </Button>
             </div>
