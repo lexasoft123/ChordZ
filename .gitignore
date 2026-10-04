@@ -11,3 +11,10 @@ release
 .env.*
 !.env.example
 .claude/
+
+# Apple signing exports stay outside version control.
+*.p12
+*.p8
+*.key
+*.mobileprovision
+*.keychain-db

@@ -11,9 +11,10 @@
     "preview": "vite preview",
     "start": "vite",
     "electron:dev": "vite",
-    "electron:build": "tsc -b && vite build && electron-builder",
+    "electron:build": "npm run dist",
     "typecheck": "tsc -b",
-    "test": "node --experimental-strip-types --test tests/*.test.ts"
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "dist": "node scripts/dist.cjs"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "5.3.0",
@@ -34,25 +35,19 @@
     "vite-plugin-electron": "1.1.1",
     "vite-plugin-electron-renderer": "1.0.0"
   },
-  "build": {
-    "appId": "studio.chordz.app",
-    "productName": "ChordZ",
-    "directories": {
-      "buildResources": "build"
-    },
-    "files": [
-      "dist/**",
-      "dist-electron/**"
-    ],
-    "mac": {
-      "category": "public.app-category.music",
-      "target": "dmg"
-    }
-  },
   "allowScripts": {
     "electron@43.4.0": true
   },
   "engines": {
     "node": ">=22.12.0"
+  },
+  "author": "lexasoft <lexasoft@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lexasoft123/ChordZ.git"
+  },
+  "homepage": "https://github.com/lexasoft123/ChordZ#readme",
+  "bugs": {
+    "url": "https://github.com/lexasoft123/ChordZ/issues"
   }
 }

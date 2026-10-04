@@ -1,0 +1,32 @@
+# Adapted from SingZ; electron-builder 26 uses flat mac signing options.
+appId: studio.chordz.app
+productName: ChordZ
+directories:
+  buildResources: build
+  output: release
+files:
+  - dist/**
+  - dist-electron/**
+asar: true
+npmRebuild: false
+electronLanguages: [en, en-US, en_GB]
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+afterPack: scripts/afterPack.cjs
+mac:
+  category: public.app-category.music
+  hardenedRuntime: true
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.inherit.plist
+  notarize: true
+  darkModeSupport: true
+  target: [dmg]
+dmg:
+  title: ${productName}
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
