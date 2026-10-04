@@ -6,5 +6,6 @@ function run(command, args, options = {}) {
   if (result.status !== 0) process.exit(result.status ?? 1)
 }
 run(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'build'], { shell: process.platform === 'win32' })
+require('./write-third-party-notices.cjs')
 // Publishing belongs to the release workflow, never to local packaging.
 run(process.execPath, [require.resolve('electron-builder/cli.js'), ...process.argv.slice(2), '--publish', 'never'])

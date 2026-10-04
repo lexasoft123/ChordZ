@@ -1,6 +1,7 @@
 # Plan 01 — ChordZ workspace shell redesign
 
-**Input:** `DESIGN-IS-2026-08-30/` (audit 16/30, verdict REDESIGN).
+**Status:** completed; the final audit scored 25/30, up from 16/30.
+**Input:** the August 30, 2026 design audit (preserved in Git history).
 **Scope:** the shell around the song page — library sidebar, toolbar, details
 panel, transport, guitar helper. The design *language* (`@singz/ui`
 night-studio) is fixed and not in scope.
@@ -342,9 +343,9 @@ new `src/components/Toast.tsx`, `src/styles/app.css`.
 
 **What to implement:** nothing. Prove the redesign moved the numbers.
 
-1. Re-run every probe from `DESIGN-IS-2026-08-30/01-evidence.md` and record the
-   new values beside the old ones.
-2. Re-score `02-scorecard.md` against the same anchors.
+1. Re-run the original evidence probes (available in Git history) and record
+   the new values beside the old ones.
+2. Re-score against the original scorecard anchors (available in Git history).
 
 **Cutover criteria — all must hold**
 

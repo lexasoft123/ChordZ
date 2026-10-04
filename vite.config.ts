@@ -17,7 +17,16 @@ export default defineConfig({
       },
       preload: {
         input: 'electron/preload.ts',
-        vite: { build: { outDir: 'dist-electron', rollupOptions: { external: ['electron'] } } },
+        // The plugin emits CommonJS; .mjs would make Electron load it as ESM.
+        vite: {
+          build: {
+            outDir: 'dist-electron',
+            rollupOptions: {
+              external: ['electron'],
+              output: { format: 'cjs', entryFileNames: 'preload.cjs' },
+            },
+          },
+        },
       },
       renderer: {},
     }),

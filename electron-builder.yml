@@ -6,10 +6,14 @@ directories:
   output: release
 files:
   - dist/**
-  - dist-electron/**
+  - dist-electron/main.js
+  - dist-electron/preload.cjs
+  # Vite bundles every application dependency; none are loaded from disk.
+  - "!node_modules/**"
 asar: true
 npmRebuild: false
-electronLanguages: [en, en-US, en_GB]
+# en-US also retains Electron's macOS en.lproj fallback.
+electronLanguages: [en-US]
 artifactName: ${productName}-${version}-${os}-${arch}.${ext}
 afterPack: scripts/afterPack.cjs
 mac:

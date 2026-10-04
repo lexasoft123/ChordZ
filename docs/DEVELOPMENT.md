@@ -23,6 +23,8 @@ npm run dist -- --win --x64
 
 Build the Windows installer on Windows and macOS installers on macOS. `dist` rebuilds first, then invokes electron-builder with publishing disabled. Installers and unpacked apps go to `release/`. `electron:build` is an alias for `dist`.
 
+The package includes only Vite output and dependency license notices; bundled dependencies are excluded from `node_modules` to avoid duplicate runtime and development builds. Electron keeps its English (US) locale and the macOS English fallback. Font subsets remain bundled so multilingual song lyrics display correctly. Chromium resources, ICU data, graphics libraries and Electron helpers are required runtime files.
+
 ## GitHub release
 
 The repository is prepared for `lexasoft123/ChordZ`, following the sibling SingZ repository. Adjust the package repository links and README badges if publishing elsewhere.
