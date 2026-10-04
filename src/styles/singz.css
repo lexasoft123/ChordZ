@@ -1,0 +1,48 @@
+/* ChordZ layout aliases; the shared kit owns colors and control styling. */
+.app-root, .compare-pane {
+  position: relative;
+  z-index: 1;
+}
+.app-root[class], .compare-pane[class] {
+  --bg: var(--sz-bg);
+  --bg-elevated: var(--sz-surface-raised);
+  --bg-sunken: var(--sz-panel-deep);
+  --bg-panel: var(--sz-panel);
+  --bg-spine: var(--sz-panel-deep);
+  --ink: var(--sz-text);
+  --ink-soft: var(--sz-dim);
+  --ink-faint: var(--sz-faint);
+  --ink-line: var(--sz-line-strong);
+  --hairline: var(--sz-line);
+  --accent: var(--sz-accent);
+  --accent-soft: var(--sz-accent-lift);
+  --accent-tint: var(--sz-accent-soft);
+  --chord: var(--sz-accent);
+  --chord-bg: var(--sz-accent-soft);
+  --font-display: var(--sz-font-display);
+  --font-body: var(--sz-font-display);
+  --font-ui: var(--sz-font-display);
+  --font-mono: var(--sz-font-mono);
+  --diagram-string: var(--sz-dim);
+  --diagram-fret: var(--sz-faint);
+  --diagram-nut: var(--sz-text);
+  --diagram-dot: var(--sz-accent);
+  --diagram-dot-text: var(--sz-accent-ink);
+  --diagram-open: var(--sz-text);
+  --diagram-mute: var(--sz-dim);
+  --diagram-barre: var(--sz-accent);
+  background-image: none;
+}
+.titlebar { padding: 0; gap: 0; }
+.theme-switcher .mode-seg { font-size: 11px; }
+.theme-switcher-dark.pill { padding: 4px 8px; }
+.toolbar-perform.pill.primary {
+  background: linear-gradient(135deg, var(--sz-accent-lift), var(--sz-accent-deep));
+  color: var(--sz-accent-ink);
+}
+.control-row .pill { padding: 3px 7px; min-height: 24px; }
+.control-row .pill:disabled { opacity: .4; }
+textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--sz-focus-ring);
+  outline-offset: 2px;
+}

@@ -1,3 +1,5 @@
+import { atelier, tokens } from '@singz/ui/tokens'
+import type { CSSProperties } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { bridge } from './platform/bridge'
 import { parseChordPro, serializeChordPro, type Song } from './lib/chordpro'
@@ -18,6 +20,12 @@ interface PrefState {
   preferFlats: boolean
   fontScale: number
   showHelper: boolean
+}
+
+
+function paletteStyle(theme: string, dark: boolean): CSSProperties {
+  const palette = theme === 'atelier' && !dark ? { ...tokens, ...atelier } : tokens
+  return Object.fromEntries(Object.entries(palette).map(([key, value]) => [`--sz-${key}`, value])) as CSSProperties
 }
 
 const PREFS_KEY = 'chordz:prefs:v1'
@@ -201,7 +209,7 @@ export default function App() {
   }
 
   return (
-    <div className={`app-root theme-${prefs.theme}`} data-dark={prefs.dark ? '1' : '0'}>
+    <div style={paletteStyle(prefs.theme === 'compare' ? 'atelier' : prefs.theme, prefs.dark)} className={`app-root theme-${prefs.theme}`} data-dark={prefs.dark ? '1' : '0'}>
       <Titlebar
         theme={prefs.theme}
         right={
@@ -215,11 +223,11 @@ export default function App() {
       />
       {prefs.theme === 'compare' ? (
         <div className="compare-split">
-          <div className="compare-pane theme-atelier" data-dark={prefs.dark ? '1' : '0'}>
+          <div style={paletteStyle('atelier', prefs.dark)} className="compare-pane theme-atelier" data-dark={prefs.dark ? '1' : '0'}>
             <div className="compare-label">Atelier</div>
             <Workspace {...workspaceProps} themeKey="atelier" compact />
           </div>
-          <div className="compare-pane theme-studio" data-dark={prefs.dark ? '1' : '0'}>
+          <div style={paletteStyle('studio', prefs.dark)} className="compare-pane theme-studio" data-dark={prefs.dark ? '1' : '0'}>
             <div className="compare-label">Studio</div>
             <Workspace {...workspaceProps} themeKey="studio" compact />
           </div>

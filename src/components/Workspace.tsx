@@ -1,3 +1,4 @@
+import { Button } from '@singz/ui'
 import { useState } from 'react'
 import type { Song } from '../lib/chordpro'
 import { serializeChordPro } from '../lib/chordpro'
@@ -176,9 +177,9 @@ export default function Workspace(props: WorkspaceProps) {
             <div className="workspace-empty-inner">
               <div className="workspace-empty-mark">∅</div>
               <div className="workspace-empty-title">No song selected</div>
-              <button className="workspace-empty-btn" onClick={props.onNewSong}>
+              <Button size="sm" className="workspace-empty-btn" onClick={props.onNewSong}>
                 New song
-              </button>
+              </Button>
             </div>
           </div>
         )}

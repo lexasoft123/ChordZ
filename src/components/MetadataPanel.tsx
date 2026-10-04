@@ -1,3 +1,4 @@
+import { Button } from '@singz/ui'
 import { useMemo, useState } from 'react'
 import type { Song } from '../lib/chordpro'
 import { collectChords } from '../lib/chordpro'
@@ -55,11 +56,11 @@ export default function MetadataPanel({
           {(song.meta.tags ?? []).map((t) => (
             <span className="meta-tag" key={t}>
               {t}
-              <button
+              <Button size="sm"
                 className="meta-tag-remove"
                 onClick={() => onTagsChange((song.meta.tags ?? []).filter((x) => x !== t))}
                 aria-label={`Remove tag ${t}`}
-              >×</button>
+              >×</Button>
             </span>
           ))}
         </div>

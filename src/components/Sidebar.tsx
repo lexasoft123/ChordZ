@@ -1,3 +1,4 @@
+import { Button } from '@singz/ui'
 import { useMemo, useState } from 'react'
 import type { Song } from '../lib/chordpro'
 
@@ -32,9 +33,9 @@ export default function Sidebar({ songs, selectedId, onSelect, onNew, onDelete, 
     <aside className="sidebar">
       <div className="sidebar-head">
         <span className="sidebar-head-label">Library</span>
-        <button className="sidebar-new" onClick={onNew} title="New song" aria-label="New song">
+        <Button size="sm" className="sidebar-new" onClick={onNew} title="New song" aria-label="New song">
           +
-        </button>
+        </Button>
       </div>
       <div className="sidebar-search">
         <input

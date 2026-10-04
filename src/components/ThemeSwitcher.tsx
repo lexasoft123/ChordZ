@@ -1,8 +1,10 @@
+import { Button, SegmentedControl } from '@singz/ui'
+
 export type ThemeMode = 'atelier' | 'studio' | 'compare'
 
 const OPTIONS: { value: ThemeMode; label: string; hint: string }[] = [
   { value: 'atelier', label: 'Atelier', hint: 'Warm paper' },
-  { value: 'studio', label: 'Studio', hint: 'Cool editorial' },
+  { value: 'studio', label: 'Studio', hint: 'Night studio' },
   { value: 'compare', label: 'Compare', hint: 'Side-by-side' },
 ]
 
@@ -19,23 +21,13 @@ export default function ThemeSwitcher({
 }) {
   return (
     <div className="theme-switcher">
-      <div className="theme-switcher-group" role="tablist" aria-label="Visual direction">
-        {OPTIONS.map((o) => (
-          <button
-            key={o.value}
-            type="button"
-            role="tab"
-            aria-selected={value === o.value}
-            data-active={value === o.value ? '1' : '0'}
-            onClick={() => onChange(o.value)}
-            title={o.hint}
-            className="theme-switcher-btn"
-          >
-            {o.label}
-          </button>
-        ))}
-      </div>
-      <button
+      <SegmentedControl
+        options={OPTIONS.map((o) => ({ ...o, title: o.hint }))}
+        value={value}
+        onChange={onChange}
+        aria-label="Visual direction"
+      />
+      <Button
         type="button"
         className="theme-switcher-dark"
         aria-pressed={dark}
@@ -43,7 +35,7 @@ export default function ThemeSwitcher({
         title={dark ? 'Switch to light' : 'Switch to dark'}
       >
         {dark ? '◐' : '◑'}
-      </button>
+      </Button>
     </div>
   )
 }
